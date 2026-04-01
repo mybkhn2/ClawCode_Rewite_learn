@@ -4,84 +4,132 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Claw Code — Phân tích kiến trúc & Gợi ý sản phẩm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
+    /* ═══════════════════════════════════════════
+       JAPANESE TRADITIONAL PALETTE (和の色)
+       墨 Sumi · 藍 Ai · 朱 Shu · 金 Kin · 紅 Beni
+    ════════════════════════════════════════════ */
     :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --surface2: #21262d;
-      --border: #30363d;
-      --accent: #58a6ff;
-      --accent2: #3fb950;
-      --accent3: #f78166;
-      --accent4: #d2a8ff;
-      --accent5: #ffa657;
-      --text: #e6edf3;
-      --text-muted: #8b949e;
-      --tag-blue: #1f6feb;
-      --tag-green: #196c2e;
-      --tag-orange: #n/a;
-      --radius: 10px;
+      /* 和紙スタイル · Traditional Japanese Light Palette (伝統的日本スタイル) */
+      --bg:        #F2EAD8;   /* 生成色 kibai-iro — raw silk cream */
+      --surface:   #FAF5EC;   /* 象牙色 zou-ge — ivory */
+      --surface2:  #EDE3D0;   /* 砥粉色 tonoko — light ochre */
+      --border:    #C8B490;   /* 砂色 suna-iro — sand */
+      --border2:   #9C7E54;   /* 飴色 ame-iro — amber */
+
+      --gold:      #8B6914;   /* 金茶 kincya — dark gold */
+      --gold-lt:   #A88020;   /* 淡金 tankin */
+      --vermillion:#B83A10;   /* 朱色 shu-iro — traditional red */
+      --vermillion-lt:#D05030;
+      --asagi:     #2A7880;   /* 浅葱色 asagi-iro — teal */
+      --asagi-lt:  #308898;
+      --sakura:    #9A4870;   /* 桜色 sakura */
+      --matcha:    #4A6E38;   /* 抹茶 matcha */
+      --indigo:    #2A4878;   /* 藍色 ai-iro */
+
+      --text:      #2B1A0A;   /* 墨 sumi — rich ink dark brown */
+      --text-muted:#7A5838;   /* 鳶色 tobi-iro — warm medium brown */
+      --radius: 2px;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      background: var(--bg);
+      background-color: var(--bg);
+      /* 和紙 washi dot texture — subtle traditional paper grain */
+      background-image: radial-gradient(circle, rgba(155,120,60,0.10) 1px, transparent 1px);
+      background-size: 28px 28px;
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', sans-serif;
-      line-height: 1.7;
+      font-family: 'Noto Serif JP', 'Georgia', serif;
+      line-height: 1.8;
       padding: 0 0 80px;
     }
 
-    /* ── HERO ── */
+    /* ── JAPANESE WAVE PATTERN (seigaiha 青海波) ── */
+    @keyframes breathe { 0%,100%{opacity:.4} 50%{opacity:.7} }
+
+    /* ══════════════════════════════
+       HERO — 扉 Tobira (entrance)
+    ══════════════════════════════ */
     .hero {
-      background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0d1117 100%);
-      border-bottom: 1px solid var(--border);
-      padding: 60px 40px 48px;
+      background:
+        linear-gradient(180deg, #EDE3C8 0%, #F5EDD8 50%, #F2EAD8 100%);
+      border-bottom: 3px solid var(--border2);
+      padding: 64px 40px 52px;
       text-align: center;
       position: relative;
       overflow: hidden;
     }
+    /* 障子 shoji screen grid pattern */
     .hero::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(88,166,255,0.08) 0%, transparent 70%);
+      background:
+        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(139,105,20,0.08) 60px),
+        repeating-linear-gradient(0deg,  transparent, transparent 59px, rgba(139,105,20,0.08) 60px);
       pointer-events: none;
+    }
+    /* vermillion torii-gate accent bars */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--vermillion) 20%, var(--gold) 50%, var(--vermillion) 80%, transparent);
     }
     .hero-badge {
       display: inline-block;
-      background: rgba(88,166,255,0.1);
-      border: 1px solid rgba(88,166,255,0.3);
-      color: var(--accent);
-      padding: 4px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      border: 1px solid var(--border2);
+      border-top: 2px solid var(--vermillion);
+      color: var(--vermillion);
+      padding: 5px 20px;
+      font-size: 11px;
+      font-weight: 500;
+      font-family: 'Noto Sans JP', sans-serif;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      margin-bottom: 20px;
+      margin-bottom: 28px;
+      background: rgba(184,58,16,0.06);
     }
     .hero h1 {
-      font-size: 2.8rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.2;
+      font-size: 2.6rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1.3;
       margin-bottom: 16px;
-      background: linear-gradient(135deg, #e6edf3 0%, #58a6ff 60%, #d2a8ff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--text);
+      text-shadow: 1px 1px 0 rgba(43,26,10,0.10);
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--gold);
+    }
+    /* kanji decorative subtitle */
+    .hero-kanji {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      letter-spacing: 0.3em;
+      margin-bottom: 18px;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 300;
     }
     .hero p {
       color: var(--text-muted);
-      font-size: 1.1rem;
-      max-width: 620px;
+      font-size: 1rem;
+      max-width: 580px;
       margin: 0 auto 28px;
+      font-weight: 300;
+      line-height: 2;
     }
     .hero-meta {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 24px;
+      gap: 0;
       flex-wrap: wrap;
     }
     .hero-meta span {
@@ -89,90 +137,115 @@
       align-items: center;
       gap: 6px;
       color: var(--text-muted);
-      font-size: 13px;
+      font-size: 12px;
+      font-family: 'Noto Sans JP', sans-serif;
+      padding: 4px 16px;
+      border-right: 1px solid var(--border);
     }
-    .hero-meta .dot { color: var(--accent2); }
+    .hero-meta span:last-child { border-right: none; }
+    .hero-meta .dot { color: var(--vermillion); font-size: 8px; }
 
-    /* ── LAYOUT ── */
+    /* ══════════════════════════════
+       LAYOUT
+    ══════════════════════════════ */
     .container {
       max-width: 1100px;
       margin: 0 auto;
       padding: 0 32px;
     }
 
-    /* ── SECTION TITLES ── */
-    .section {
-      margin-top: 64px;
-    }
+    /* ══════════════════════════════
+       SECTION DIVIDER — 区切り
+    ══════════════════════════════ */
+    .section { margin-top: 64px; }
+
     .section-header {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 16px;
       margin-bottom: 28px;
-      padding-bottom: 16px;
+      padding-bottom: 14px;
       border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    /* vermillion left stripe */
+    .section-header::before {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0;
+      width: 60px; height: 2px;
+      background: var(--vermillion);
     }
     .section-icon {
-      width: 36px; height: 36px;
-      border-radius: 8px;
+      width: 38px; height: 38px;
       display: flex; align-items: center; justify-content: center;
       font-size: 18px;
       flex-shrink: 0;
+      border: 1px solid var(--border2);
+      background: var(--surface2);
     }
-    .icon-blue { background: rgba(88,166,255,0.12); }
-    .icon-green { background: rgba(63,185,80,0.12); }
-    .icon-purple { background: rgba(210,168,255,0.12); }
-    .icon-orange { background: rgba(255,166,87,0.12); }
+    .icon-blue  { border-color: rgba(74,143,150,0.5); }
+    .icon-green { border-color: rgba(106,140,90,0.5); }
+    .icon-purple{ border-color: rgba(196,122,138,0.5); }
+    .icon-orange{ border-color: rgba(200,164,94,0.5); }
+
     .section-header h2 {
-      font-size: 1.4rem;
-      font-weight: 700;
+      font-size: 1.3rem;
+      font-weight: 500;
       color: var(--text);
+      letter-spacing: 0.06em;
     }
     .section-header p {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text-muted);
-      margin-top: 2px;
+      margin-top: 3px;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 300;
+      letter-spacing: 0.06em;
     }
 
-    /* ── CARDS ── */
+    /* ══════════════════════════════
+       CARDS — 額縁 Gakubuchi (frame)
+    ══════════════════════════════ */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
+      border-top: 2px solid var(--border2);
+      padding: 24px 28px;
       margin-bottom: 16px;
+      transition: border-color 0.25s;
     }
-    .card:hover {
-      border-color: rgba(88,166,255,0.3);
-      transition: border-color 0.2s;
-    }
+    .card:hover { border-color: var(--border2); border-top-color: var(--gold); }
     .card-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      color: var(--text);
-      margin-bottom: 8px;
+      color: var(--gold);
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
+      letter-spacing: 0.05em;
     }
-    .card p {
-      color: var(--text-muted);
-      font-size: 14px;
-    }
+    .card p { color: var(--text-muted); font-size: 13.5px; }
 
-    /* ── GRID ── */
+    /* ══════════════════════════════
+       GRID
+    ══════════════════════════════ */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
     @media (max-width: 768px) {
       .grid-2, .grid-3 { grid-template-columns: 1fr; }
-      .hero h1 { font-size: 2rem; }
+      .hero h1 { font-size: 1.8rem; }
+      .hero-meta span { padding: 4px 8px; }
     }
 
-    /* ── FLOW DIAGRAM ── */
+    /* ══════════════════════════════
+       FLOW DIAGRAM
+    ══════════════════════════════ */
     .flow {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-top: 2px solid var(--vermillion);
       padding: 28px 32px;
       overflow-x: auto;
     }
@@ -180,25 +253,27 @@
       display: flex;
       align-items: center;
       gap: 0;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .flow-box {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 18px;
-      font-size: 13px;
-      font-weight: 600;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      padding: 8px 16px;
+      font-size: 12.5px;
+      font-weight: 500;
       white-space: nowrap;
       flex-shrink: 0;
+      font-family: 'Noto Sans JP', sans-serif;
+      letter-spacing: 0.04em;
+      color: var(--text);
     }
-    .flow-box.highlight { border-color: var(--accent); color: var(--accent); }
-    .flow-box.green { border-color: var(--accent2); color: var(--accent2); }
-    .flow-box.purple { border-color: var(--accent4); color: var(--accent4); }
-    .flow-box.orange { border-color: var(--accent5); color: var(--accent5); }
+    .flow-box.highlight { border-color: var(--gold); color: var(--gold); background: rgba(200,164,94,0.06); }
+    .flow-box.green     { border-color: var(--matcha); color: var(--matcha); }
+    .flow-box.purple    { border-color: var(--sakura); color: var(--sakura); }
+    .flow-box.orange    { border-color: var(--asagi); color: var(--asagi); }
     .flow-arrow {
       color: var(--text-muted);
-      font-size: 18px;
+      font-size: 16px;
       padding: 0 8px;
       flex-shrink: 0;
     }
@@ -211,74 +286,90 @@
     }
     .flow-sub { font-size: 12px; color: var(--text-muted); padding: 2px 0; }
 
-    /* ── CODE BLOCK ── */
+    /* ══════════════════════════════
+       CODE BLOCK — 巻物 Makimono
+    ══════════════════════════════ */
     pre {
+      background: #EDE8DC;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--vermillion);
+      padding: 20px 24px;
+      font-size: 12.5px;
+      line-height: 1.8;
+      overflow-x: auto;
+      font-family: 'SFMono-Regular', 'Cascadia Code', 'Fira Code', monospace;
+      color: var(--text);
+    }
+    code {
+      font-family: 'SFMono-Regular', 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.88em;
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px 24px;
-      font-size: 13px;
-      line-height: 1.7;
-      overflow-x: auto;
-      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-      color: #e6edf3;
+      padding: 1px 5px;
+      color: var(--vermillion);
     }
-    code { font-family: inherit; }
-    .kw { color: #ff7b72; }
-    .fn { color: #d2a8ff; }
-    .str { color: #a5d6ff; }
-    .cm { color: #8b949e; font-style: italic; }
-    .num { color: #ffa657; }
+    pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
+    .kw  { color: var(--vermillion); font-weight: 600; }
+    .fn  { color: var(--asagi); }
+    .str { color: var(--matcha); }
+    .cm  { color: var(--text-muted); font-style: italic; }
+    .num { color: var(--gold); }
 
-    /* ── TABLE ── */
+    /* ══════════════════════════════
+       TABLE — 障子 Shoji
+    ══════════════════════════════ */
     .table-wrap {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
       overflow: hidden;
     }
-    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th {
       background: var(--surface2);
-      padding: 12px 16px;
+      padding: 10px 16px;
       text-align: left;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 600;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 500;
+      font-family: 'Noto Sans JP', sans-serif;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--border2);
     }
     td {
-      padding: 12px 16px;
+      padding: 11px 16px;
       border-bottom: 1px solid var(--border);
       color: var(--text);
       vertical-align: top;
     }
     tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.02); }
+    tr:hover td { background: rgba(200,164,94,0.03); }
     .tag {
       display: inline-block;
-      padding: 2px 8px;
-      border-radius: 20px;
+      padding: 1px 8px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 500;
+      font-family: 'Noto Sans JP', sans-serif;
+      letter-spacing: 0.06em;
+      border: 1px solid;
     }
-    .tag-blue { background: rgba(88,166,255,0.15); color: var(--accent); border: 1px solid rgba(88,166,255,0.3); }
-    .tag-green { background: rgba(63,185,80,0.15); color: var(--accent2); border: 1px solid rgba(63,185,80,0.3); }
-    .tag-orange { background: rgba(255,166,87,0.15); color: var(--accent5); border: 1px solid rgba(255,166,87,0.3); }
-    .tag-red { background: rgba(247,129,102,0.15); color: var(--accent3); border: 1px solid rgba(247,129,102,0.3); }
-    .tag-purple { background: rgba(210,168,255,0.15); color: var(--accent4); border: 1px solid rgba(210,168,255,0.3); }
+    .tag-blue   { color: var(--asagi);      border-color: rgba(74,143,150,0.4);  background: rgba(74,143,150,0.08); }
+    .tag-green  { color: var(--matcha);     border-color: rgba(106,140,90,0.4);  background: rgba(106,140,90,0.08); }
+    .tag-orange { color: var(--gold);       border-color: rgba(200,164,94,0.4);  background: rgba(200,164,94,0.08); }
+    .tag-red    { color: var(--vermillion-lt); border-color: rgba(192,68,42,0.4); background: rgba(192,68,42,0.08); }
+    .tag-purple { color: var(--sakura);     border-color: rgba(196,122,138,0.4); background: rgba(196,122,138,0.08); }
 
-    /* ── PRODUCT CARDS ── */
+    /* ══════════════════════════════
+       PRODUCT CARDS — 品書き Shinagaki
+    ══════════════════════════════ */
     .product-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px;
+      padding: 28px 28px 22px;
       margin-bottom: 16px;
       position: relative;
       overflow: hidden;
+      transition: border-color 0.25s;
     }
     .product-card::before {
       content: '';
@@ -286,9 +377,10 @@
       left: 0; top: 0; bottom: 0;
       width: 3px;
     }
-    .product-card.easy::before { background: var(--accent2); }
-    .product-card.medium::before { background: var(--accent5); }
-    .product-card.hard::before { background: var(--accent3); }
+    .product-card.easy::before   { background: var(--matcha); }
+    .product-card.medium::before { background: var(--gold); }
+    .product-card.hard::before   { background: var(--vermillion); }
+    .product-card:hover { border-color: var(--border2); }
     .product-header {
       display: flex;
       align-items: flex-start;
@@ -297,205 +389,295 @@
       margin-bottom: 14px;
     }
     .product-num {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--border);
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--border2);
       line-height: 1;
-      font-variant-numeric: tabular-nums;
+      font-family: 'Noto Serif JP', serif;
+      letter-spacing: 0.04em;
     }
     .product-title {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 4px;
+      margin-bottom: 5px;
+      letter-spacing: 0.04em;
     }
-    .product-subtitle {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-    .product-body { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
-    .product-uses {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
+    .product-subtitle { font-size: 12.5px; color: var(--text-muted); font-family: 'Noto Sans JP', sans-serif; }
+    .product-body { font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.85; }
+    .product-uses { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
     .use-chip {
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 3px 10px;
-      font-size: 11.5px;
-      font-family: 'SF Mono', monospace;
-      color: var(--accent4);
+      padding: 2px 9px;
+      font-size: 11px;
+      font-family: 'SFMono-Regular', monospace;
+      color: var(--asagi);
     }
     .product-meta {
       display: flex;
-      gap: 16px;
-      font-size: 12px;
+      gap: 20px;
+      font-size: 11.5px;
       color: var(--text-muted);
       border-top: 1px solid var(--border);
-      padding-top: 14px;
+      padding-top: 12px;
+      font-family: 'Noto Sans JP', sans-serif;
+      letter-spacing: 0.04em;
     }
     .product-meta span { display: flex; align-items: center; gap: 4px; }
 
-    /* ── STATS BAR ── */
+    /* ══════════════════════════════
+       STATS BAR — 数字 Suuji
+    ══════════════════════════════ */
     .stats-bar {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1px;
       background: var(--border);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
       overflow: hidden;
       margin-bottom: 32px;
     }
     .stat {
       background: var(--surface);
-      padding: 20px 24px;
+      padding: 22px 24px;
       text-align: center;
+      position: relative;
+    }
+    .stat::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 20%; right: 20%;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.3;
     }
     .stat-num {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--accent);
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--gold);
       line-height: 1;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      font-family: 'Noto Serif JP', serif;
+      letter-spacing: 0.04em;
     }
     .stat-label {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
-      font-weight: 500;
+      font-family: 'Noto Sans JP', sans-serif;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
     }
-    @media (max-width: 600px) {
-      .stats-bar { grid-template-columns: 1fr 1fr; }
-    }
+    @media (max-width: 600px) { .stats-bar { grid-template-columns: 1fr 1fr; } }
 
-    /* ── TIMELINE ── */
-    .timeline { position: relative; padding-left: 28px; }
+    /* ══════════════════════════════
+       TIMELINE — 年表 Nenpyou
+    ══════════════════════════════ */
+    .timeline { position: relative; padding-left: 32px; }
     .timeline::before {
       content: '';
       position: absolute;
-      left: 7px; top: 8px; bottom: 8px;
-      width: 2px;
-      background: var(--border);
+      left: 8px; top: 8px; bottom: 8px;
+      width: 1px;
+      background: linear-gradient(180deg, var(--vermillion), var(--gold), var(--border));
     }
-    .tl-item {
-      position: relative;
-      margin-bottom: 20px;
-    }
+    .tl-item { position: relative; margin-bottom: 24px; }
     .tl-dot {
       position: absolute;
-      left: -24px; top: 6px;
-      width: 14px; height: 14px;
-      border-radius: 50%;
+      left: -27px; top: 5px;
+      width: 12px; height: 12px;
       background: var(--surface2);
-      border: 2px solid var(--accent);
+      border: 2px solid var(--border2);
+      transform: rotate(45deg);
     }
-    .tl-item.done .tl-dot { background: var(--accent2); border-color: var(--accent2); }
+    .tl-item.done .tl-dot { background: var(--vermillion); border-color: var(--vermillion); }
     .tl-title {
       font-weight: 700;
-      font-size: 14px;
+      font-size: 13.5px;
       color: var(--text);
-      margin-bottom: 2px;
+      margin-bottom: 4px;
+      letter-spacing: 0.04em;
     }
-    .tl-desc { font-size: 13px; color: var(--text-muted); }
+    .tl-desc { font-size: 13px; color: var(--text-muted); line-height: 1.75; }
 
-    /* ── SUBSYSTEM GRID ── */
+    /* ══════════════════════════════
+       SUBSYSTEM GRID
+    ══════════════════════════════ */
     .sub-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 10px;
+      gap: 8px;
     }
     .sub-item {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px 16px;
+      border-left: 2px solid var(--border2);
+      padding: 12px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
+      transition: border-left-color 0.2s;
     }
-    .sub-name { font-size: 13px; font-weight: 600; font-family: monospace; color: var(--accent4); }
+    .sub-item:hover { border-left-color: var(--gold); }
+    .sub-name { font-size: 12.5px; font-weight: 500; font-family: monospace; color: var(--asagi); }
     .sub-count {
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 4px;
       padding: 1px 6px;
       font-size: 11px;
       color: var(--text-muted);
       white-space: nowrap;
+      font-family: 'Noto Sans JP', sans-serif;
     }
 
-    /* ── HIGHLIGHT BOX ── */
+    /* ══════════════════════════════
+       HIGHLIGHT BOX — 囲み Kakomi
+    ══════════════════════════════ */
     .highlight-box {
-      background: rgba(88,166,255,0.05);
-      border: 1px solid rgba(88,166,255,0.2);
-      border-radius: var(--radius);
-      padding: 20px 24px;
+      background: rgba(42,120,128,0.06);
+      border: 1px solid rgba(42,120,128,0.25);
+      border-left: 3px solid var(--asagi);
+      padding: 18px 22px;
       margin-top: 16px;
     }
     .highlight-box.green-box {
-      background: rgba(63,185,80,0.05);
-      border-color: rgba(63,185,80,0.2);
+      background: rgba(74,110,56,0.06);
+      border-color: rgba(74,110,56,0.25);
+      border-left-color: var(--matcha);
     }
-    .highlight-box p { font-size: 14px; color: var(--text); }
-    .highlight-box strong { color: var(--accent); }
-    .highlight-box.green-box strong { color: var(--accent2); }
+    .highlight-box p { font-size: 14px; color: var(--text); line-height: 1.9; }
+    .highlight-box strong { color: var(--gold); font-weight: 700; }
+    .highlight-box.green-box strong { color: var(--matcha); filter: brightness(1.25); }
 
-    /* ── FOOTER ── */
+    /* ══════════════════════════════
+       FOOTER — 奥付 Okuzuke
+    ══════════════════════════════ */
     .footer {
       margin-top: 80px;
       padding: 32px 40px;
       border-top: 1px solid var(--border);
       text-align: center;
       color: var(--text-muted);
-      font-size: 13px;
+      font-size: 12.5px;
+      font-family: 'Noto Sans JP', sans-serif;
+      position: relative;
     }
-    .footer a { color: var(--accent); text-decoration: none; }
-    .footer a:hover { text-decoration: underline; }
+    .footer::before {
+      content: '✦ ── ✦ ── ✦';
+      display: block;
+      color: var(--border2);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      margin-bottom: 16px;
+    }
+    .footer a { color: var(--gold); text-decoration: none; }
+    .footer a:hover { color: var(--gold-lt); text-decoration: underline; }
 
-    /* ── NAV ── */
+    /* ══════════════════════════════
+       TOC — 目次 Mokuji (scroll nav)
+    ══════════════════════════════ */
     .toc {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-top: 3px double var(--vermillion);
       padding: 20px 24px;
       margin: 32px 0 0;
+      position: relative;
     }
-    .toc h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 12px; }
+    .toc::before {
+      content: '目次';
+      position: absolute;
+      top: -11px; left: 20px;
+      background: var(--bg);
+      padding: 0 8px;
+      font-size: 11px;
+      color: var(--gold);
+      font-family: 'Noto Sans JP', sans-serif;
+      letter-spacing: 0.15em;
+    }
+    .toc h3 {
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      font-family: 'Noto Sans JP', sans-serif;
+      display: none;
+    }
     .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
     .toc a {
       display: inline-block;
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 4px 12px;
-      font-size: 13px;
+      padding: 4px 14px;
+      font-size: 12.5px;
       color: var(--text);
       text-decoration: none;
-      transition: border-color 0.15s, color 0.15s;
+      font-family: 'Noto Sans JP', sans-serif;
+      letter-spacing: 0.04em;
+      transition: all 0.2s;
     }
-    .toc a:hover { border-color: var(--accent); color: var(--accent); }
+    .toc a:hover { border-color: var(--gold); color: var(--gold); background: rgba(200,164,94,0.07); }
     .toc a.featured {
-      background: rgba(210,168,255,0.1);
-      border-color: rgba(210,168,255,0.4);
-      color: var(--accent4);
+      background: rgba(192,68,42,0.08);
+      border-color: rgba(192,68,42,0.5);
+      color: var(--vermillion-lt);
       font-weight: 700;
     }
-    .toc a.featured:hover { border-color: var(--accent4); background: rgba(210,168,255,0.18); }
+    .toc a.featured:hover { border-color: var(--vermillion); background: rgba(192,68,42,0.14); }
 
+    /* ══════════════════════════════
+       BULLET LIST
+    ══════════════════════════════ */
     ul.bullet { list-style: none; padding: 0; }
     ul.bullet li {
-      padding: 5px 0;
-      padding-left: 20px;
+      padding: 5px 0 5px 22px;
       position: relative;
-      font-size: 14px;
+      font-size: 13.5px;
       color: var(--text-muted);
+      line-height: 1.75;
     }
-    ul.bullet li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
-    ul.bullet li strong { color: var(--text); }
+    ul.bullet li::before {
+      content: '◈';
+      position: absolute;
+      left: 0;
+      color: var(--vermillion);
+      font-size: 10px;
+      top: 8px;
+    }
+    ul.bullet li strong { color: var(--text); font-weight: 700; }
+
+    /* ══════════════════════════════
+       GROUP LABELS — 区分 Kubun
+    ══════════════════════════════ */
+    .group-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin: 0 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+    .group-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .group-easy   { color: var(--matcha);     }
+    .group-medium { color: var(--gold);        }
+    .group-hard   { color: var(--vermillion);  }
+
+    .group-pill {
+      border: 1px solid;
+      padding: 3px 14px;
+    }
+    .group-easy   .group-pill { border-color: rgba(106,140,90,0.4); background: rgba(106,140,90,0.08); }
+    .group-medium .group-pill { border-color: rgba(200,164,94,0.4); background: rgba(200,164,94,0.08); }
+    .group-hard   .group-pill { border-color: rgba(192,68,42,0.4);  background: rgba(192,68,42,0.08); }
   </style>
 </head>
 <body>
@@ -504,14 +686,15 @@
      HERO
 ════════════════════════════════════════════ -->
 <div class="hero">
-  <div class="hero-badge">Phân tích kiến trúc · Tháng 4 / 2026</div>
-  <h1>Claw Code — Deep Dive</h1>
+  <div class="hero-badge">架構分析 · Tháng 4 / 2026</div>
+  <div class="hero-kanji">爪 码 · アーキテクチャ解析</div>
+  <h1>Claw Code — <em>Deep Dive</em></h1>
   <p>Phân tích toàn diện mã nguồn rewrite của Claude Code: kiến trúc, subsystems, và các sản phẩm có thể xây dựng từ nền tảng này.</p>
   <div class="hero-meta">
-    <span><span class="dot">●</span> Python rewrite</span>
-    <span><span class="dot">●</span> 184 tools · 207 commands</span>
-    <span><span class="dot">●</span> 50K ⭐ trong 2 giờ</span>
-    <span><span class="dot">●</span> Rust port đang tiến hành</span>
+    <span><span class="dot">◆</span> Python rewrite</span>
+    <span><span class="dot">◆</span> 184 tools · 207 commands</span>
+    <span><span class="dot">◆</span> 50K ⭐ trong 2 giờ</span>
+    <span><span class="dot">◆</span> Rust port đang tiến hành</span>
   </div>
 </div>
 
@@ -560,12 +743,12 @@
         <div class="tl-item done">
           <div class="tl-dot"></div>
           <div class="tl-title">31/3/2026 · Buổi sáng — Publish lên GitHub</div>
-          <div class="tl-desc">Repo <code style="background:var(--surface2);padding:1px 6px;border-radius:4px;font-size:12px">claw-code</code> đạt <strong>50.000 ⭐ trong 2 tiếng</strong> — kỷ lục nhanh nhất lịch sử GitHub.</div>
+          <div class="tl-desc">Repo <code>claw-code</code> đạt <strong>50.000 ⭐ trong 2 tiếng</strong> — kỷ lục nhanh nhất lịch sử GitHub.</div>
         </div>
         <div class="tl-item">
           <div class="tl-dot"></div>
           <div class="tl-title">Hiện tại — Rust port đang tiến hành</div>
-          <div class="tl-desc">Branch <code style="background:var(--surface2);padding:1px 6px;border-radius:4px;font-size:12px">dev/rust</code> đang được phát triển để có performance và memory-safety cao hơn.</div>
+          <div class="tl-desc">Branch <code>dev/rust</code> đang được phát triển để có performance và memory-safety cao hơn.</div>
         </div>
       </div>
       <div class="highlight-box" style="margin-top:20px">
@@ -662,7 +845,7 @@
         <div class="flow-arrow">→</div>
         <div class="flow-box highlight">runtime.py · RuntimeSession</div>
       </div>
-      <div style="margin: 12px 0 8px; color: var(--text-muted); font-size: 12px; padding-left: 8px;">RuntimeSession khởi tạo:</div>
+      <div style="font-size:11px;color:var(--text-muted);padding-left:8px;font-family:'Noto Sans JP',sans-serif">RuntimeSession khởi tạo:</div>
       <div class="flow-indent">
         <div class="flow-box green">context.py</div>
         <div class="flow-arrow">·</div>
@@ -678,7 +861,7 @@
         <div class="flow-arrow">·</div>
         <div style="font-size:12px;color:var(--text-muted)">Build system prompt</div>
       </div>
-      <div style="margin: 12px 0 8px; color: var(--text-muted); font-size: 12px; padding-left: 8px;">Sau đó đẩy vào:</div>
+      <div style="font-size:11px;color:var(--text-muted);padding-left:8px;font-family:'Noto Sans JP',sans-serif">Sau đó đẩy vào:</div>
       <div class="flow-row">
         <div style="width:32px"></div>
         <div class="flow-box purple">query_engine.py · QueryEnginePort</div>
@@ -687,7 +870,7 @@
         <div class="flow-arrow">→</div>
         <div class="flow-box purple">TurnResult</div>
       </div>
-      <div style="margin: 12px 0 8px; color: var(--text-muted); font-size: 12px; padding-left: 8px;">QueryEnginePort dùng:</div>
+      <div style="font-size:11px;color:var(--text-muted);padding-left:8px;font-family:'Noto Sans JP',sans-serif">QueryEnginePort dùng:</div>
       <div class="flow-indent">
         <div class="flow-box orange">commands.py</div>
         <div class="flow-arrow">+</div>
@@ -697,7 +880,7 @@
         <div class="flow-arrow">→</div>
         <div style="font-size:12px;color:var(--text-muted)">route → exec → track usage</div>
       </div>
-      <div style="margin: 12px 0 8px; color: var(--text-muted); font-size: 12px; padding-left: 8px;">Persistence:</div>
+      <div style="font-size:11px;color:var(--text-muted);padding-left:8px;font-family:'Noto Sans JP',sans-serif">Persistence:</div>
       <div class="flow-indent">
         <div class="flow-box">session_store.py</div>
         <div class="flow-arrow">+</div>
@@ -765,7 +948,7 @@
     </div>
     <div class="grid-2">
       <div>
-        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px">🔧 TOOL CATEGORIES (184 tools)</div>
+        <div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:10px;font-family:'Noto Sans JP',sans-serif">🔧 TOOL CATEGORIES (184 tools)</div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Tool</th><th>Vai trò</th></tr></thead>
@@ -794,7 +977,7 @@
         </div>
       </div>
       <div>
-        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px">⌨ COMMAND CATEGORIES (207 commands)</div>
+        <div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:10px;font-family:'Noto Sans JP',sans-serif">⌨ COMMAND CATEGORIES (207 commands)</div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Command</th><th>Chức năng</th></tr></thead>
@@ -925,8 +1108,8 @@ path = engine.<span class="fn">persist_session</span>()  <span class="cm"># → 
     </div>
 
     <!-- GROUP 1 -->
-    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent2);margin:0 0 12px;display:flex;align-items:center;gap:8px">
-      <span style="background:rgba(63,185,80,.15);border:1px solid rgba(63,185,80,.3);padding:2px 10px;border-radius:20px">🟢 Nhóm 1 — Build được ngay (1–2 tuần)</span>
+    <div class="group-label group-easy" style="margin:0 0 14px">
+      <span class="group-pill">一 · Nhóm 1 — Build được ngay (1–2 tuần)</span>
     </div>
 
     <div class="product-card easy">
@@ -983,8 +1166,8 @@ path = engine.<span class="fn">persist_session</span>()  <span class="cm"># → 
     </div>
 
     <!-- GROUP 2 -->
-    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent5);margin:24px 0 12px;display:flex;align-items:center;gap:8px">
-      <span style="background:rgba(255,166,87,.15);border:1px solid rgba(255,166,87,.3);padding:2px 10px;border-radius:20px">🟡 Nhóm 2 — Build trong 1–2 tháng</span>
+    <div class="group-label group-medium" style="margin:24px 0 14px">
+      <span class="group-pill">二 · Nhóm 2 — Build trong 1–2 tháng</span>
     </div>
 
     <div class="product-card medium">
@@ -1068,8 +1251,8 @@ path = engine.<span class="fn">persist_session</span>()  <span class="cm"># → 
     </div>
 
     <!-- GROUP 3 -->
-    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent3);margin:24px 0 12px;display:flex;align-items:center;gap:8px">
-      <span style="background:rgba(247,129,102,.15);border:1px solid rgba(247,129,102,.3);padding:2px 10px;border-radius:20px">🔴 Nhóm 3 — Tham vọng lớn (3–6 tháng)</span>
+    <div class="group-label group-hard" style="margin:24px 0 14px">
+      <span class="group-pill">三 · Nhóm 3 — Tham vọng lớn (3–6 tháng)</span>
     </div>
 
     <div class="product-card hard">
@@ -1152,7 +1335,7 @@ path = engine.<span class="fn">persist_session</span>()  <span class="cm"># → 
     </div>
     <div style="margin-top:16px" class="grid-2">
       <div class="card">
-        <div class="card-title" style="color:var(--accent2)">✅ Những gì đã hoạt động thực sự</div>
+        <div class="card-title" style="color:var(--matcha);filter:brightness(1.2)">✅ Những gì đã hoạt động thực sự</div>
         <ul class="bullet">
           <li>CLI tool chạy được ngay (<code>python3 -m src summary</code>)</li>
           <li>Session save/load ra đĩa</li>
@@ -1165,7 +1348,7 @@ path = engine.<span class="fn">persist_session</span>()  <span class="cm"># → 
         </ul>
       </div>
       <div class="card">
-        <div class="card-title" style="color:var(--accent3)">⚠ Những gì còn là skeleton</div>
+        <div class="card-title" style="color:var(--vermillion-lt)">⚠ Những gì còn là skeleton</div>
         <ul class="bullet">
           <li>Không gọi API Anthropic thực</li>
           <li>Tool execution là mock (bash không chạy thật)</li>
@@ -1181,20 +1364,21 @@ path = engine.<span class="fn">persist_session</span>()  <span class="cm"># → 
 </div>
 
 <!-- CTA BANNER -->
-<div style="margin: 40px 32px 0; max-width:1100px; margin-left:auto; margin-right:auto;">
+<div style="margin: 48px 32px 0; max-width:1100px; margin-left:auto; margin-right:auto;">
   <a href="strategy.html" style="
     display:flex; align-items:center; justify-content:space-between;
-    background: rgba(210,168,255,0.07);
-    border: 1px solid rgba(210,168,255,0.3);
-    border-radius:12px; padding:22px 28px;
-    text-decoration:none; transition: border-color .2s, background .2s;
-  " onmouseover="this.style.background='rgba(210,168,255,0.12)';this.style.borderColor='rgba(210,168,255,0.5)'" onmouseout="this.style.background='rgba(210,168,255,0.07)';this.style.borderColor='rgba(210,168,255,0.3)'">
+    background: rgba(192,68,42,0.05);
+    border: 1px solid rgba(192,68,42,0.35);
+    border-top: 2px solid var(--vermillion);
+    padding:24px 32px;
+    text-decoration:none; transition: all .25s;
+  " onmouseover="this.style.background='rgba(192,68,42,0.09)';this.style.borderColor='rgba(192,68,42,0.6)'" onmouseout="this.style.background='rgba(192,68,42,0.05)';this.style.borderColor='rgba(192,68,42,0.35)'">
     <div>
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent4);margin-bottom:4px">Tiếp theo</div>
-      <div style="font-size:1.1rem;font-weight:700;color:var(--text)">🚀 Chiến lược thương mại toàn cảnh</div>
-      <div style="font-size:13px;color:var(--text-muted);margin-top:3px">Tài sản kỹ thuật · Map chiến trường · 3 thị trường ngách · Moat · Lộ trình 4 giai đoạn · Bước đầu tiên</div>
+      <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.16em;color:var(--vermillion-lt);margin-bottom:6px;font-family:'Noto Sans JP',sans-serif">次のページへ · Tiếp theo</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--text);letter-spacing:0.04em">戦略 · Chiến lược thương mại toàn cảnh</div>
+      <div style="font-size:12.5px;color:var(--text-muted);margin-top:5px;font-family:'Noto Sans JP',sans-serif;font-weight:300">Tài sản kỹ thuật · Map chiến trường · 3 thị trường ngách · Moat · Lộ trình 4 giai đoạn</div>
     </div>
-    <div style="font-size:2rem;color:var(--accent4);flex-shrink:0;margin-left:20px">→</div>
+    <div style="font-size:1.6rem;color:var(--vermillion);flex-shrink:0;margin-left:20px;font-family:'Noto Serif JP',serif">→</div>
   </a>
 </div>
 
