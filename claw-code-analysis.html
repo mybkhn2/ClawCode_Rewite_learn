@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claw Code — Phân tích kiến trúc & Gợi ý sản phẩm</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #21262d;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --accent3: #f78166;
+      --accent4: #d2a8ff;
+      --accent5: #ffa657;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --tag-blue: #1f6feb;
+      --tag-green: #196c2e;
+      --tag-orange: #n/a;
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', sans-serif;
+      line-height: 1.7;
+      padding: 0 0 80px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0d1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 40px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(88,166,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(88,166,255,0.1);
+      border: 1px solid rgba(88,166,255,0.3);
+      color: var(--accent);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #e6edf3 0%, #58a6ff 60%, #d2a8ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 620px;
+      margin: 0 auto 28px;
+    }
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .hero-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .hero-meta .dot { color: var(--accent2); }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* ── SECTION TITLES ── */
+    .section {
+      margin-top: 64px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .icon-blue { background: rgba(88,166,255,0.12); }
+    .icon-green { background: rgba(63,185,80,0.12); }
+    .icon-purple { background: rgba(210,168,255,0.12); }
+    .icon-orange { background: rgba(255,166,87,0.12); }
+    .section-header h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .section-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card:hover {
+      border-color: rgba(88,166,255,0.3);
+      transition: border-color 0.2s;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card p {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* ── GRID ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2rem; }
+    }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      overflow-x: auto;
+    }
+    .flow-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 4px;
+    }
+    .flow-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .flow-box.highlight { border-color: var(--accent); color: var(--accent); }
+    .flow-box.green { border-color: var(--accent2); color: var(--accent2); }
+    .flow-box.purple { border-color: var(--accent4); color: var(--accent4); }
+    .flow-box.orange { border-color: var(--accent5); color: var(--accent5); }
+    .flow-arrow {
+      color: var(--text-muted);
+      font-size: 18px;
+      padding: 0 8px;
+      flex-shrink: 0;
+    }
+    .flow-indent {
+      padding-left: 48px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .flow-sub { font-size: 12px; color: var(--text-muted); padding: 2px 0; }
+
+    /* ── CODE BLOCK ── */
+    pre {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      color: #e6edf3;
+    }
+    code { font-family: inherit; }
+    .kw { color: #ff7b72; }
+    .fn { color: #d2a8ff; }
+    .str { color: #a5d6ff; }
+    .cm { color: #8b949e; font-style: italic; }
+    .num { color: #ffa657; }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th {
+      background: var(--surface2);
+      padding: 12px 16px;
+      text-align: left;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .tag-blue { background: rgba(88,166,255,0.15); color: var(--accent); border: 1px solid rgba(88,166,255,0.3); }
+    .tag-green { background: rgba(63,185,80,0.15); color: var(--accent2); border: 1px solid rgba(63,185,80,0.3); }
+    .tag-orange { background: rgba(255,166,87,0.15); color: var(--accent5); border: 1px solid rgba(255,166,87,0.3); }
+    .tag-red { background: rgba(247,129,102,0.15); color: var(--accent3); border: 1px solid rgba(247,129,102,0.3); }
+    .tag-purple { background: rgba(210,168,255,0.15); color: var(--accent4); border: 1px solid rgba(210,168,255,0.3); }
+
+    /* ── PRODUCT CARDS ── */
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .product-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+    }
+    .product-card.easy::before { background: var(--accent2); }
+    .product-card.medium::before { background: var(--accent5); }
+    .product-card.hard::before { background: var(--accent3); }
+    .product-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .product-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--border);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .product-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .product-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .product-body { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
+    .product-uses {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .use-chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 11.5px;
+      font-family: 'SF Mono', monospace;
+      color: var(--accent4);
+    }
+    .product-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    .product-meta span { display: flex; align-items: center; gap: 4px; }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .stat {
+      background: var(--surface);
+      padding: 20px 24px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    @media (max-width: 600px) {
+      .stats-bar { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ── TIMELINE ── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px; top: 8px; bottom: 8px;
+      width: 2px;
+      background: var(--border);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .tl-dot {
+      position: absolute;
+      left: -24px; top: 6px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 2px solid var(--accent);
+    }
+    .tl-item.done .tl-dot { background: var(--accent2); border-color: var(--accent2); }
+    .tl-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .tl-desc { font-size: 13px; color: var(--text-muted); }
+
+    /* ── SUBSYSTEM GRID ── */
+    .sub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .sub-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .sub-name { font-size: 13px; font-weight: 600; font-family: monospace; color: var(--accent4); }
+    .sub-count {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* ── HIGHLIGHT BOX ── */
+    .highlight-box {
+      background: rgba(88,166,255,0.05);
+      border: 1px solid rgba(88,166,255,0.2);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 16px;
+    }
+    .highlight-box.green-box {
+      background: rgba(63,185,80,0.05);
+      border-color: rgba(63,185,80,0.2);
+    }
+    .highlight-box p { font-size: 14px; color: var(--text); }
+    .highlight-box strong { color: var(--accent); }
+    .highlight-box.green-box strong { color: var(--accent2); }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 80px;
+      padding: 32px 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* ── NAV ── */
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin: 32px 0 0;
+    }
+    .toc h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 12px; }
+    .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+    .toc a {
+      display: inline-block;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 13px;
+      color: var(--text);
+      text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .toc a:hover { border-color: var(--accent); color: var(--accent); }
+    .toc a.featured {
+      background: rgba(210,168,255,0.1);
+      border-color: rgba(210,168,255,0.4);
+      color: var(--accent4);
+      font-weight: 700;
+    }
+    .toc a.featured:hover { border-color: var(--accent4); background: rgba(210,168,255,0.18); }
+
+    ul.bullet { list-style: none; padding: 0; }
+    ul.bullet li {
+      padding: 5px 0;
+      padding-left: 20px;
+      position: relative;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    ul.bullet li::before { content: '→'; position: absolute; left: 0; color: var(--accent); }
+    ul.bullet li strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     HERO
+════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-badge">Phân tích kiến trúc · Tháng 4 / 2026</div>
+  <h1>Claw Code — Deep Dive</h1>
+  <p>Phân tích toàn diện mã nguồn rewrite của Claude Code: kiến trúc, subsystems, và các sản phẩm có thể xây dựng từ nền tảng này.</p>
+  <div class="hero-meta">
+    <span><span class="dot">●</span> Python rewrite</span>
+    <span><span class="dot">●</span> 184 tools · 207 commands</span>
+    <span><span class="dot">●</span> 50K ⭐ trong 2 giờ</span>
+    <span><span class="dot">●</span> Rust port đang tiến hành</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TOC -->
+  <div class="toc">
+    <h3>Mục lục</h3>
+    <ul>
+      <li><a href="strategy.html" class="featured">🚀 Chiến lược thương mại →</a></li>
+      <li><a href="#backstory">📖 Backstory</a></li>
+      <li><a href="#stats">📊 Stats</a></li>
+      <li><a href="#architecture">🏛 Kiến trúc</a></li>
+      <li><a href="#flow">🔄 Luồng chạy</a></li>
+      <li><a href="#subsystems">📦 Subsystems</a></li>
+      <li><a href="#tools">🔧 Tools & Commands</a></li>
+      <li><a href="#modules">📄 Core Modules</a></li>
+      <li><a href="#products">🚀 Gợi ý sản phẩm</a></li>
+      <li><a href="#recommendation">⭐ Khuyến nghị</a></li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       BACKSTORY
+  ════════════════════════════════════════ -->
+  <div class="section" id="backstory">
+    <div class="section-header">
+      <div class="section-icon icon-blue">📖</div>
+      <div>
+        <h2>Backstory</h2>
+        <p>Câu chuyện phía sau bộ mã nguồn này</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="timeline">
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-title">31/3/2026 · 4:00 AM — Source code Claude Code bị lộ</div>
+          <div class="tl-desc">Toàn bộ codebase TypeScript của Claude Code xuất hiện trên internet, cộng đồng dev dậy sóng.</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-title">31/3/2026 · Trước bình minh — Sigrid Jin bắt đầu port</div>
+          <div class="tl-desc">Kỹ sư Sigrid Jin (Seoul) ngồi viết lại toàn bộ từ đầu bằng Python — không copy code gốc — sử dụng <strong>oh-my-codex (OmX)</strong> để orchestrate quá trình porting với AI.</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-title">31/3/2026 · Buổi sáng — Publish lên GitHub</div>
+          <div class="tl-desc">Repo <code style="background:var(--surface2);padding:1px 6px;border-radius:4px;font-size:12px">claw-code</code> đạt <strong>50.000 ⭐ trong 2 tiếng</strong> — kỷ lục nhanh nhất lịch sử GitHub.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-title">Hiện tại — Rust port đang tiến hành</div>
+          <div class="tl-desc">Branch <code style="background:var(--surface2);padding:1px 6px;border-radius:4px;font-size:12px">dev/rust</code> đang được phát triển để có performance và memory-safety cao hơn.</div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:20px">
+        <p><strong>Điểm đặc biệt:</strong> Sigrid Jin là người dùng Claude Code nhiều nhất thế giới — <strong>25 tỷ token</strong> trong 1 năm. Đã được Wall Street Journal phỏng vấn trong bài <em>"The Trillion Dollar Race to Automate Our Entire Lives"</em> (21/3/2026).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       STATS
+  ════════════════════════════════════════ -->
+  <div class="section" id="stats">
+    <div class="section-header">
+      <div class="section-icon icon-green">📊</div>
+      <div>
+        <h2>Thống kê codebase</h2>
+        <p>Quy mô và phạm vi của dự án</p>
+      </div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-num">184</div>
+        <div class="stat-label">Tools</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">207</div>
+        <div class="stat-label">Commands</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">29</div>
+        <div class="stat-label">Subsystems</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">1.3K+</div>
+        <div class="stat-label">Modules gốc (TS)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       ARCHITECTURE
+  ════════════════════════════════════════ -->
+  <div class="section" id="architecture">
+    <div class="section-header">
+      <div class="section-icon icon-purple">🏛</div>
+      <div>
+        <h2>Kiến trúc tổng quan</h2>
+        <p>Claw Code là một agent harness framework, không phải AI</p>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-bottom:20px">
+      <p><strong>Định nghĩa quan trọng:</strong> Claw Code KHÔNG phải là một AI. Đây là <strong>harness framework</strong> — bộ khung điều phối mà Claude Code dùng để nhận lệnh, chọn tools, quản lý session, và chạy agent loop. Phần gọi API thực sự là bạn tự implement.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">🎯 Mục tiêu thiết kế</div>
+        <ul class="bullet">
+          <li><strong>Tool wiring</strong> — kết nối tools vào agent loop</li>
+          <li><strong>Command routing</strong> — định tuyến prompt đến đúng handler</li>
+          <li><strong>Session management</strong> — lưu/load trạng thái hội thoại</li>
+          <li><strong>Permission system</strong> — kiểm soát quyền truy cập tools</li>
+          <li><strong>Multi-turn loop</strong> — vòng lặp nhiều lượt tương tác</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">🧱 Nguyên tắc thiết kế</div>
+        <ul class="bullet">
+          <li><strong>frozen=True dataclasses</strong> — immutable, thread-safe</li>
+          <li><strong>@lru_cache</strong> — load data 1 lần duy nhất</li>
+          <li><strong>Snapshot-based</strong> — tools/commands lưu trong JSON tĩnh</li>
+          <li><strong>PortingModule</strong> — đơn vị thống nhất cho mọi module</li>
+          <li><strong>Clean-room rewrite</strong> — không copy code gốc</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       FLOW
+  ════════════════════════════════════════ -->
+  <div class="section" id="flow">
+    <div class="section-header">
+      <div class="section-icon icon-blue">🔄</div>
+      <div>
+        <h2>Luồng chạy chính</h2>
+        <p>Từ User Input đến TurnResult</p>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="flow-box highlight">User Input (CLI)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box highlight">main.py</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box highlight">runtime.py · RuntimeSession</div>
+      </div>
+      <div style="margin: 12px 0 8px; color: var(--text-muted); font-size: 12px; padding-left: 8px;">RuntimeSession khởi tạo:</div>
+      <div class="flow-indent">
+        <div class="flow-box green">context.py</div>
+        <div class="flow-arrow">·</div>
+        <div style="font-size:12px;color:var(--text-muted)">Đọc môi trường, đếm files</div>
+      </div>
+      <div class="flow-indent">
+        <div class="flow-box green">setup.py</div>
+        <div class="flow-arrow">·</div>
+        <div style="font-size:12px;color:var(--text-muted)">Python env, startup steps</div>
+      </div>
+      <div class="flow-indent">
+        <div class="flow-box green">system_init.py</div>
+        <div class="flow-arrow">·</div>
+        <div style="font-size:12px;color:var(--text-muted)">Build system prompt</div>
+      </div>
+      <div style="margin: 12px 0 8px; color: var(--text-muted); font-size: 12px; padding-left: 8px;">Sau đó đẩy vào:</div>
+      <div class="flow-row">
+        <div style="width:32px"></div>
+        <div class="flow-box purple">query_engine.py · QueryEnginePort</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box purple">submit_message()</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-box purple">TurnResult</div>
+      </div>
+      <div style="margin: 12px 0 8px; color: var(--text-muted); font-size: 12px; padding-left: 8px;">QueryEnginePort dùng:</div>
+      <div class="flow-indent">
+        <div class="flow-box orange">commands.py</div>
+        <div class="flow-arrow">+</div>
+        <div class="flow-box orange">tools.py</div>
+        <div class="flow-arrow">+</div>
+        <div class="flow-box orange">permissions.py</div>
+        <div class="flow-arrow">→</div>
+        <div style="font-size:12px;color:var(--text-muted)">route → exec → track usage</div>
+      </div>
+      <div style="margin: 12px 0 8px; color: var(--text-muted); font-size: 12px; padding-left: 8px;">Persistence:</div>
+      <div class="flow-indent">
+        <div class="flow-box">session_store.py</div>
+        <div class="flow-arrow">+</div>
+        <div class="flow-box">transcript.py</div>
+        <div class="flow-arrow">→</div>
+        <div style="font-size:12px;color:var(--text-muted)">Lưu/load session ra đĩa, compact lịch sử</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SUBSYSTEMS
+  ════════════════════════════════════════ -->
+  <div class="section" id="subsystems">
+    <div class="section-header">
+      <div class="section-icon icon-orange">📦</div>
+      <div>
+        <h2>Subsystems</h2>
+        <p>29 subsystems với tổng cộng 1,300+ modules từ codebase gốc TypeScript</p>
+      </div>
+    </div>
+    <div class="sub-grid">
+      <div class="sub-item"><span class="sub-name">utils</span><span class="sub-count">564 modules</span></div>
+      <div class="sub-item"><span class="sub-name">components</span><span class="sub-count">389 modules</span></div>
+      <div class="sub-item"><span class="sub-name">services</span><span class="sub-count">130 modules</span></div>
+      <div class="sub-item"><span class="sub-name">hooks</span><span class="sub-count">104 modules</span></div>
+      <div class="sub-item"><span class="sub-name">bridge</span><span class="sub-count">31 modules</span></div>
+      <div class="sub-item"><span class="sub-name">cli</span><span class="sub-count">19 modules</span></div>
+      <div class="sub-item"><span class="sub-name">skills</span><span class="sub-count">20 modules</span></div>
+      <div class="sub-item"><span class="sub-name">constants</span><span class="sub-count">21 modules</span></div>
+      <div class="sub-item"><span class="sub-name">keybindings</span><span class="sub-count">14 modules</span></div>
+      <div class="sub-item"><span class="sub-name">migrations</span><span class="sub-count">11 modules</span></div>
+      <div class="sub-item"><span class="sub-name">types</span><span class="sub-count">11 modules</span></div>
+      <div class="sub-item"><span class="sub-name">entrypoints</span><span class="sub-count">8 modules</span></div>
+      <div class="sub-item"><span class="sub-name">memdir</span><span class="sub-count">8 modules</span></div>
+      <div class="sub-item"><span class="sub-name">buddy</span><span class="sub-count">6 modules</span></div>
+      <div class="sub-item"><span class="sub-name">state</span><span class="sub-count">6 modules</span></div>
+      <div class="sub-item"><span class="sub-name">vim</span><span class="sub-count">5 modules</span></div>
+      <div class="sub-item"><span class="sub-name">native_ts</span><span class="sub-count">4 modules</span></div>
+      <div class="sub-item"><span class="sub-name">remote</span><span class="sub-count">4 modules</span></div>
+      <div class="sub-item"><span class="sub-name">screens</span><span class="sub-count">3 modules</span></div>
+      <div class="sub-item"><span class="sub-name">server</span><span class="sub-count">3 modules</span></div>
+      <div class="sub-item"><span class="sub-name">plugins</span><span class="sub-count">2 modules</span></div>
+      <div class="sub-item"><span class="sub-name">upstreamproxy</span><span class="sub-count">2 modules</span></div>
+      <div class="sub-item"><span class="sub-name">assistant</span><span class="sub-count">1 module</span></div>
+      <div class="sub-item"><span class="sub-name">bootstrap</span><span class="sub-count">1 module</span></div>
+      <div class="sub-item"><span class="sub-name">coordinator</span><span class="sub-count">1 module</span></div>
+      <div class="sub-item"><span class="sub-name">moreright</span><span class="sub-count">1 module</span></div>
+      <div class="sub-item"><span class="sub-name">outputStyles</span><span class="sub-count">1 module</span></div>
+      <div class="sub-item"><span class="sub-name">schemas</span><span class="sub-count">1 module</span></div>
+      <div class="sub-item"><span class="sub-name">voice</span><span class="sub-count">1 module</span></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       TOOLS & COMMANDS
+  ════════════════════════════════════════ -->
+  <div class="section" id="tools">
+    <div class="section-header">
+      <div class="section-icon icon-green">🔧</div>
+      <div>
+        <h2>Tools & Commands inventory</h2>
+        <p>Danh sách đầy đủ các tool categories</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px">🔧 TOOL CATEGORIES (184 tools)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tool</th><th>Vai trò</th></tr></thead>
+            <tbody>
+              <tr><td><code>BashTool</code></td><td>Chạy shell commands</td></tr>
+              <tr><td><code>FileReadTool</code></td><td>Đọc file</td></tr>
+              <tr><td><code>FileWriteTool</code></td><td>Ghi file</td></tr>
+              <tr><td><code>FileEditTool</code></td><td>Chỉnh sửa file</td></tr>
+              <tr><td><code>GrepTool</code></td><td>Tìm kiếm trong file</td></tr>
+              <tr><td><code>GlobTool</code></td><td>Tìm file theo pattern</td></tr>
+              <tr><td><code>AgentTool</code></td><td>Spawn sub-agent</td></tr>
+              <tr><td><code>WebFetchTool</code></td><td>Lấy nội dung web</td></tr>
+              <tr><td><code>WebSearchTool</code></td><td>Tìm kiếm web</td></tr>
+              <tr><td><code>TaskCreateTool</code></td><td>Tạo async task</td></tr>
+              <tr><td><code>TodoWriteTool</code></td><td>Quản lý todo list</td></tr>
+              <tr><td><code>NotebookEditTool</code></td><td>Chỉnh sửa Jupyter</td></tr>
+              <tr><td><code>MCPTool</code></td><td>Model Context Protocol</td></tr>
+              <tr><td><code>ScheduleCronTool</code></td><td>Lên lịch tự động</td></tr>
+              <tr><td><code>LSPTool</code></td><td>Language Server Protocol</td></tr>
+              <tr><td><code>REPLTool</code></td><td>Interactive REPL</td></tr>
+              <tr><td><code>PowerShellTool</code></td><td>Windows PowerShell</td></tr>
+              <tr><td><code>SendMessageTool</code></td><td>Gửi tin nhắn</td></tr>
+              <tr><td><code>RemoteTriggerTool</code></td><td>Trigger remote action</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:10px">⌨ COMMAND CATEGORIES (207 commands)</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Command</th><th>Chức năng</th></tr></thead>
+            <tbody>
+              <tr><td><code>/review</code></td><td>Code review</td></tr>
+              <tr><td><code>/commit</code></td><td>Git commit</td></tr>
+              <tr><td><code>/plan</code></td><td>Lập kế hoạch</td></tr>
+              <tr><td><code>/agents</code></td><td>Quản lý agents</td></tr>
+              <tr><td><code>/mcp</code></td><td>MCP server config</td></tr>
+              <tr><td><code>/memory</code></td><td>Quản lý memory</td></tr>
+              <tr><td><code>/hooks</code></td><td>Lifecycle hooks</td></tr>
+              <tr><td><code>/skills</code></td><td>Quản lý skills</td></tr>
+              <tr><td><code>/tasks</code></td><td>Task management</td></tr>
+              <tr><td><code>/session</code></td><td>Session info</td></tr>
+              <tr><td><code>/model</code></td><td>Chọn LLM model</td></tr>
+              <tr><td><code>/voice</code></td><td>Voice mode</td></tr>
+              <tr><td><code>/vim</code></td><td>Vim keybindings</td></tr>
+              <tr><td><code>/theme</code></td><td>Giao diện theme</td></tr>
+              <tr><td><code>/permissions</code></td><td>Tool permissions</td></tr>
+              <tr><td><code>/stats</code></td><td>Usage statistics</td></tr>
+              <tr><td><code>/export</code></td><td>Export session</td></tr>
+              <tr><td><code>/share</code></td><td>Share session</td></tr>
+              <tr><td><code>/teleport</code></td><td>Remote teleport</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       CORE MODULES
+  ════════════════════════════════════════ -->
+  <div class="section" id="modules">
+    <div class="section-header">
+      <div class="section-icon icon-purple">📄</div>
+      <div>
+        <h2>6 Core Modules quan trọng nhất</h2>
+        <p>Thứ tự nên đọc để hiểu codebase</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>File</th>
+            <th>Class / Func chính</th>
+            <th>Vai trò</th>
+            <th>Đọc trước</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-blue">1</span></td>
+            <td><code>models.py</code></td>
+            <td><code>PortingModule</code>, <code>UsageSummary</code></td>
+            <td>Data classes cốt lõi — nền tảng của mọi thứ</td>
+            <td><span class="tag tag-green">Bắt đầu đây</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">2</span></td>
+            <td><code>tools.py</code></td>
+            <td><code>load_tool_snapshot()</code>, <code>PORTED_TOOLS</code></td>
+            <td>Load 184 tools từ JSON, filter theo permissions</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">3</span></td>
+            <td><code>commands.py</code></td>
+            <td><code>load_command_snapshot()</code>, <code>PORTED_COMMANDS</code></td>
+            <td>Load 207 commands từ JSON, filter và lookup</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">4</span></td>
+            <td><code>query_engine.py</code></td>
+            <td><code>QueryEnginePort</code>, <code>submit_message()</code></td>
+            <td>Trái tim — vòng lặp turn-by-turn, state, token tracking</td>
+            <td><span class="tag tag-orange">Quan trọng nhất</span></td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">5</span></td>
+            <td><code>runtime.py</code></td>
+            <td><code>RuntimeSession</code>, <code>PortRuntime</code></td>
+            <td>Snapshot đầy đủ 1 phiên làm việc, bootstrap session</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-blue">6</span></td>
+            <td><code>main.py</code></td>
+            <td><code>build_parser()</code>, <code>main()</code></td>
+            <td>Entry point CLI — glue kết nối tất cả</td>
+            <td><span class="tag tag-purple">Đọc cuối</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top: 20px">
+      <pre><code><span class="cm"># Ví dụ: cách QueryEnginePort hoạt động</span>
+<span class="kw">from</span> src.query_engine <span class="kw">import</span> QueryEnginePort
+
+engine = QueryEnginePort.<span class="fn">from_workspace</span>()
+result = engine.<span class="fn">submit_message</span>(
+    prompt=<span class="str">"Tìm tất cả file Python có bug"</span>,
+    matched_commands=(<span class="str">"grep"</span>,),
+    matched_tools=(<span class="str">"GrepTool"</span>, <span class="str">"FileReadTool"</span>),
+)
+<span class="fn">print</span>(result.output)         <span class="cm"># formatted output</span>
+<span class="fn">print</span>(result.stop_reason)    <span class="cm"># 'completed' | 'max_turns_reached' | 'max_budget_reached'</span>
+<span class="fn">print</span>(result.usage)          <span class="cm"># UsageSummary(input_tokens=..., output_tokens=...)</span>
+
+<span class="cm"># Lưu session để tiếp tục sau</span>
+path = engine.<span class="fn">persist_session</span>()  <span class="cm"># → ~/.claw-code/sessions/&lt;uuid&gt;.json</span></code></pre>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       PRODUCTS
+  ════════════════════════════════════════ -->
+  <div class="section" id="products">
+    <div class="section-header">
+      <div class="section-icon icon-orange">🚀</div>
+      <div>
+        <h2>Gợi ý sản phẩm có thể build</h2>
+        <p>Từ dễ đến phức tạp, dựa trực tiếp trên kiến trúc của codebase này</p>
+      </div>
+    </div>
+
+    <!-- GROUP 1 -->
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent2);margin:0 0 12px;display:flex;align-items:center;gap:8px">
+      <span style="background:rgba(63,185,80,.15);border:1px solid rgba(63,185,80,.3);padding:2px 10px;border-radius:20px">🟢 Nhóm 1 — Build được ngay (1–2 tuần)</span>
+    </div>
+
+    <div class="product-card easy">
+      <div class="product-header">
+        <div>
+          <div class="product-title">1. AI Code Review Bot cho GitHub</div>
+          <div class="product-subtitle">Tự động review PR, suggest fix, tóm tắt thay đổi</div>
+        </div>
+        <div class="product-num">01</div>
+      </div>
+      <div class="product-body">
+        Webhook GitHub nhận event khi có PR mới → route prompt qua harness → gọi Anthropic API → post comment với nhận xét chi tiết. Tận dụng sẵn <code>commands/review.ts</code> và <code>commands/autofix-pr</code> trong snapshot.
+      </div>
+      <div class="product-uses">
+        <span class="use-chip">hooks/ (104 modules)</span>
+        <span class="use-chip">services/AgentSummary</span>
+        <span class="use-chip">commands/review</span>
+        <span class="use-chip">commands/autofix-pr</span>
+        <span class="use-chip">GrepTool</span>
+        <span class="use-chip">FileReadTool</span>
+      </div>
+      <div class="product-meta">
+        <span>⏱ 1–2 tuần</span>
+        <span>⚡ Dễ implement</span>
+        <span>💰 B2B SaaS potential</span>
+      </div>
+    </div>
+
+    <div class="product-card easy">
+      <div class="product-header">
+        <div>
+          <div class="product-title">2. Personal CLI Agent</div>
+          <div class="product-subtitle">Phiên bản Claude Code của riêng bạn chạy trên terminal</div>
+        </div>
+        <div class="product-num">02</div>
+      </div>
+      <div class="product-body">
+        Implement thực sự các tool skeleton (BashTool chạy bash thật, FileReadTool đọc file thật...) rồi nối vào Anthropic/OpenAI API. Dùng <code>QueryEnginePort</code> làm vòng lặp, <code>session_store</code> để lưu history. Bootstrap graph đã có sẵn 7 stages.
+      </div>
+      <div class="product-uses">
+        <span class="use-chip">runtime.py</span>
+        <span class="use-chip">query_engine.py</span>
+        <span class="use-chip">BashTool</span>
+        <span class="use-chip">FileReadTool</span>
+        <span class="use-chip">FileWriteTool</span>
+        <span class="use-chip">GrepTool</span>
+        <span class="use-chip">session_store.py</span>
+      </div>
+      <div class="product-meta">
+        <span>⏱ 1–2 tuần</span>
+        <span>⚡ Nền tảng tốt để học</span>
+        <span>🔓 Self-hosted hoàn toàn</span>
+      </div>
+    </div>
+
+    <!-- GROUP 2 -->
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent5);margin:24px 0 12px;display:flex;align-items:center;gap:8px">
+      <span style="background:rgba(255,166,87,.15);border:1px solid rgba(255,166,87,.3);padding:2px 10px;border-radius:20px">🟡 Nhóm 2 — Build trong 1–2 tháng</span>
+    </div>
+
+    <div class="product-card medium">
+      <div class="product-header">
+        <div>
+          <div class="product-title">3. Multi-Agent Orchestrator ⭐ HOT 2026</div>
+          <div class="product-subtitle">Một orchestrator điều phối nhiều worker agent song song</div>
+        </div>
+        <div class="product-num">03</div>
+      </div>
+      <div class="product-body">
+        Tận dụng kiến trúc <code>AgentTool</code> với 3 built-in agents: <code>planAgent</code> lập kế hoạch, <code>exploreAgent</code> khám phá codebase, <code>verificationAgent</code> kiểm thử kết quả. Orchestrator nhận task phức tạp → chia nhỏ → phân phối cho workers → tổng hợp. Đây là pattern đang được dùng nhiều nhất trong AI engineering 2026.
+      </div>
+      <div class="product-uses">
+        <span class="use-chip">AgentTool</span>
+        <span class="use-chip">planAgent</span>
+        <span class="use-chip">exploreAgent</span>
+        <span class="use-chip">verificationAgent</span>
+        <span class="use-chip">coordinator/</span>
+        <span class="use-chip">TeamCreateTool</span>
+        <span class="use-chip">TeamDeleteTool</span>
+        <span class="use-chip">TaskCreateTool</span>
+      </div>
+      <div class="product-meta">
+        <span>⏱ 3–6 tuần</span>
+        <span>🔥 Trend 2026</span>
+        <span>💡 Demo tốt cho hackathon</span>
+      </div>
+    </div>
+
+    <div class="product-card medium">
+      <div class="product-header">
+        <div>
+          <div class="product-title">4. AI-powered VSCode Extension</div>
+          <div class="product-subtitle">Cạnh tranh GitHub Copilot nhưng local/self-hosted</div>
+        </div>
+        <div class="product-num">04</div>
+      </div>
+      <div class="product-body">
+        Dùng kiến trúc harness này làm backend, build VSCode extension với UI riêng. Tận dụng <code>components/</code> (389 modules!) cho UI patterns, <code>keybindings/</code> cho UX, <code>hooks/fileSuggestions.ts</code> cho autocomplete, <code>LSPTool</code> cho language intelligence.
+      </div>
+      <div class="product-uses">
+        <span class="use-chip">components/ (389)</span>
+        <span class="use-chip">keybindings/ (14)</span>
+        <span class="use-chip">screens/</span>
+        <span class="use-chip">LSPTool</span>
+        <span class="use-chip">hooks/fileSuggestions</span>
+        <span class="use-chip">state/</span>
+      </div>
+      <div class="product-meta">
+        <span>⏱ 4–8 tuần</span>
+        <span>🏢 Enterprise market</span>
+        <span>🔒 Privacy-first</span>
+      </div>
+    </div>
+
+    <div class="product-card medium">
+      <div class="product-header">
+        <div>
+          <div class="product-title">5. Chat với Codebase (RAG over Source Code)</div>
+          <div class="product-subtitle">"Hỏi codebase như hỏi người" — onboarding & research</div>
+        </div>
+        <div class="product-num">05</div>
+      </div>
+      <div class="product-body">
+        Index toàn bộ code repo → semantic search → agent trả lời câu hỏi về code. Rất hữu ích khi join team mới. Tận dụng <code>memdir/findRelevantMemories.ts</code> pattern cho memory retrieval, <code>skills/</code> cho domain knowledge.
+      </div>
+      <div class="product-uses">
+        <span class="use-chip">GrepTool</span>
+        <span class="use-chip">GlobTool</span>
+        <span class="use-chip">FileReadTool</span>
+        <span class="use-chip">WebSearchTool</span>
+        <span class="use-chip">memdir/</span>
+        <span class="use-chip">skills/ (20)</span>
+      </div>
+      <div class="product-meta">
+        <span>⏱ 3–5 tuần</span>
+        <span>👥 Developer tooling</span>
+        <span>📈 Onboarding use case</span>
+      </div>
+    </div>
+
+    <!-- GROUP 3 -->
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent3);margin:24px 0 12px;display:flex;align-items:center;gap:8px">
+      <span style="background:rgba(247,129,102,.15);border:1px solid rgba(247,129,102,.3);padding:2px 10px;border-radius:20px">🔴 Nhóm 3 — Tham vọng lớn (3–6 tháng)</span>
+    </div>
+
+    <div class="product-card hard">
+      <div class="product-header">
+        <div>
+          <div class="product-title">6. Self-hosted Claude Code Platform</div>
+          <div class="product-subtitle">Phiên bản open-source hoàn chỉnh của Claude Code</div>
+        </div>
+        <div class="product-num">06</div>
+      </div>
+      <div class="product-body">
+        Implement đầy đủ tất cả tool skeleton thành tool thật, thêm Web UI, nối nhiều LLM provider (Anthropic, OpenAI, local Ollama). Dùng Rust port (<code>rust/</code>) cho performance-critical paths. Đây là sản phẩm có thể thay thế hoàn toàn Claude Code cho enterprise cần data privacy.
+      </div>
+      <div class="product-uses">
+        <span class="use-chip">Toàn bộ src/</span>
+        <span class="use-chip">rust/ port</span>
+        <span class="use-chip">bridge/ (31)</span>
+        <span class="use-chip">server/</span>
+        <span class="use-chip">upstreamproxy/</span>
+      </div>
+      <div class="product-meta">
+        <span>⏱ 3–6 tháng</span>
+        <span>🌍 Open source impact</span>
+        <span>🏆 Enterprise potential</span>
+      </div>
+    </div>
+
+    <div class="product-card hard">
+      <div class="product-header">
+        <div>
+          <div class="product-title">7. AI DevOps Agent</div>
+          <div class="product-subtitle">"AI SRE" — tự phát hiện và xử lý incident 24/7</div>
+        </div>
+        <div class="product-num">07</div>
+      </div>
+      <div class="product-body">
+        Agent monitor production liên tục → phát hiện anomaly → tự deploy fix hoặc rollback. Tận dụng <code>ScheduleCronTool</code> cho scheduled checks, <code>RemoteTriggerTool</code> cho remote actions, <code>ssh-mode</code> và <code>teleport-mode</code> để kết nối server từ xa.
+      </div>
+      <div class="product-uses">
+        <span class="use-chip">ScheduleCronTool</span>
+        <span class="use-chip">RemoteTriggerTool</span>
+        <span class="use-chip">remote/ (4)</span>
+        <span class="use-chip">upstreamproxy/</span>
+        <span class="use-chip">ssh-mode</span>
+        <span class="use-chip">teleport-mode</span>
+        <span class="use-chip">BashTool</span>
+      </div>
+      <div class="product-meta">
+        <span>⏱ 2–4 tháng</span>
+        <span>💰 High value B2B</span>
+        <span>🤖 Autonomous ops</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       RECOMMENDATION
+  ════════════════════════════════════════ -->
+  <div class="section" id="recommendation">
+    <div class="section-header">
+      <div class="section-icon icon-orange">⭐</div>
+      <div>
+        <h2>Khuyến nghị cá nhân</h2>
+        <p>Dựa trên context FNS AI Hackathon 2026</p>
+      </div>
+    </div>
+    <div class="highlight-box green-box">
+      <p style="font-size:15px;line-height:1.8">
+        Đối với <strong>FNS AI Hackathon</strong>, sản phẩm phù hợp nhất là <strong>Multi-Agent Orchestrator (#3)</strong> hoặc <strong>AI Code Review Bot (#1)</strong>.
+      </p>
+      <div style="margin-top:16px">
+        <ul class="bullet">
+          <li>Tận dụng được kiến trúc <strong>AgentTool + planAgent + verificationAgent</strong> sẵn có</li>
+          <li>Demo được trong <strong>thời gian hackathon ngắn</strong></li>
+          <li>Có <strong>impact analysis rõ ràng</strong> (bạn đã có IMPACT_ANALYSIS trong project)</li>
+          <li>Kiến trúc đã <strong>battle-tested</strong> — Claude Code dùng thực tế hàng triệu user</li>
+          <li>Cộng đồng đang <strong>di chuyển nhanh hơn</strong> bất kỳ tổ chức nào — đây là thời điểm vàng</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:16px" class="grid-2">
+      <div class="card">
+        <div class="card-title" style="color:var(--accent2)">✅ Những gì đã hoạt động thực sự</div>
+        <ul class="bullet">
+          <li>CLI tool chạy được ngay (<code>python3 -m src summary</code>)</li>
+          <li>Session save/load ra đĩa</li>
+          <li>Transcript management + compact</li>
+          <li>Token usage tracking</li>
+          <li>Permission system (deny by name/prefix)</li>
+          <li>Prompt routing → tool/command matching</li>
+          <li>Multi-turn loop skeleton</li>
+          <li>Stream events (SSE-style)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--accent3)">⚠ Những gì còn là skeleton</div>
+        <ul class="bullet">
+          <li>Không gọi API Anthropic thực</li>
+          <li>Tool execution là mock (bash không chạy thật)</li>
+          <li>Chưa có Web UI</li>
+          <li>Rust port chưa merge (branch <code>dev/rust</code>)</li>
+          <li>Plugin system placeholder</li>
+          <li>Voice mode placeholder</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CTA BANNER -->
+<div style="margin: 40px 32px 0; max-width:1100px; margin-left:auto; margin-right:auto;">
+  <a href="strategy.html" style="
+    display:flex; align-items:center; justify-content:space-between;
+    background: rgba(210,168,255,0.07);
+    border: 1px solid rgba(210,168,255,0.3);
+    border-radius:12px; padding:22px 28px;
+    text-decoration:none; transition: border-color .2s, background .2s;
+  " onmouseover="this.style.background='rgba(210,168,255,0.12)';this.style.borderColor='rgba(210,168,255,0.5)'" onmouseout="this.style.background='rgba(210,168,255,0.07)';this.style.borderColor='rgba(210,168,255,0.3)'">
+    <div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent4);margin-bottom:4px">Tiếp theo</div>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--text)">🚀 Chiến lược thương mại toàn cảnh</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:3px">Tài sản kỹ thuật · Map chiến trường · 3 thị trường ngách · Moat · Lộ trình 4 giai đoạn · Bước đầu tiên</div>
+    </div>
+    <div style="font-size:2rem;color:var(--accent4);flex-shrink:0;margin-left:20px">→</div>
+  </a>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>Phân tích bởi <strong>GitHub Copilot</strong> · Tháng 4 / 2026</p>
+  <p style="margin-top:6px">
+    Nguồn: <a href="https://github.com/autobytaste-lab/claw-code" target="_blank">github.com/autobytaste-lab/claw-code</a>
+    &nbsp;·&nbsp;
+    Hackathon: <strong>FNS AI Hackathon VN 2026</strong>
+    &nbsp;·&nbsp;
+    <a href="strategy.html">Chiến lược →</a>
+  </p>
+</div>
+
+</body>
+</html>
