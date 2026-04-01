@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ImpactAgent — Chiến lược thị trường & Lộ trình sản phẩm</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #21262d;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --accent3: #f78166;
+      --accent4: #d2a8ff;
+      --accent5: #ffa657;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --radius: 10px;
+      --gold: #e3b341;
+      --silver: #8b949e;
+      --bronze: #c0703a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', sans-serif;
+      line-height: 1.7;
+      padding: 0 0 100px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0d1117 0%, #1c1a2e 50%, #0d1117 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 40px 52px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(210,168,255,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .back-link {
+      position: absolute; top: 20px; left: 28px;
+      display: flex; align-items: center; gap: 6px;
+      color: var(--text-muted); font-size: 13px; text-decoration: none;
+      border: 1px solid var(--border); border-radius: 8px; padding: 5px 12px;
+      background: var(--surface); transition: color .15s, border-color .15s;
+    }
+    .back-link:hover { color: var(--accent); border-color: var(--accent); }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(210,168,255,0.1);
+      border: 1px solid rgba(210,168,255,0.3);
+      color: var(--accent4);
+      padding: 4px 14px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: 3rem; font-weight: 800; letter-spacing: -.03em; line-height: 1.2;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, #e6edf3 0%, #d2a8ff 50%, #ffa657 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-tagline {
+      font-size: 1.15rem; color: var(--text-muted);
+      max-width: 680px; margin: 0 auto 10px;
+    }
+    .hero-quote {
+      display: inline-block;
+      background: rgba(88,166,255,0.06);
+      border: 1px solid rgba(88,166,255,0.2);
+      border-left: 3px solid var(--accent);
+      padding: 12px 20px; border-radius: 0 8px 8px 0;
+      margin: 18px auto 0;
+      font-size: 14px; color: var(--text); font-style: italic;
+      max-width: 700px; text-align: left;
+    }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 24px; margin: 32px 0 0;
+    }
+    .toc h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); margin-bottom: 12px; }
+    .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+    .toc a {
+      display: inline-block; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 12px; font-size: 13px; color: var(--text);
+      text-decoration: none; transition: border-color .15s, color .15s;
+    }
+    .toc a:hover { border-color: var(--accent4); color: var(--accent4); }
+
+    /* ── SECTION ── */
+    .section { margin-top: 64px; }
+    .section-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+    }
+    .section-icon {
+      width: 38px; height: 38px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 19px; flex-shrink: 0;
+    }
+    .icon-purple { background: rgba(210,168,255,0.12); }
+    .icon-blue   { background: rgba(88,166,255,0.12); }
+    .icon-green  { background: rgba(63,185,80,0.12); }
+    .icon-orange { background: rgba(255,166,87,0.12); }
+    .icon-gold   { background: rgba(227,179,65,0.12); }
+    .icon-red    { background: rgba(247,129,102,0.12); }
+    .section-header h2 { font-size: 1.45rem; font-weight: 700; }
+    .section-header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
+    }
+    .card:hover { border-color: rgba(210,168,255,0.25); transition: border-color .2s; }
+    .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+
+    /* ── GRID ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    @media(max-width:768px){ .grid-2,.grid-3{ grid-template-columns:1fr; } .hero h1{ font-size:2rem; } }
+
+    /* ── TABLE ── */
+    .table-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; margin-bottom: 16px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th {
+      background: var(--surface2); padding: 11px 16px; text-align: left;
+      color: var(--text-muted); font-size: 11.5px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--border);
+    }
+    td { padding: 11px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* ── TAGS ── */
+    .tag {
+      display: inline-block; padding: 2px 8px; border-radius: 20px;
+      font-size: 11px; font-weight: 600;
+    }
+    .tag-blue   { background:rgba(88,166,255,.15); color:var(--accent);  border:1px solid rgba(88,166,255,.3); }
+    .tag-green  { background:rgba(63,185,80,.15);  color:var(--accent2); border:1px solid rgba(63,185,80,.3); }
+    .tag-orange { background:rgba(255,166,87,.15); color:var(--accent5); border:1px solid rgba(255,166,87,.3); }
+    .tag-purple { background:rgba(210,168,255,.15);color:var(--accent4); border:1px solid rgba(210,168,255,.3); }
+    .tag-red    { background:rgba(247,129,102,.15);color:var(--accent3); border:1px solid rgba(247,129,102,.3); }
+    .tag-gold   { background:rgba(227,179,65,.15); color:var(--gold);    border:1px solid rgba(227,179,65,.3); }
+
+    /* ── BULLET ── */
+    ul.bullet { list-style: none; padding: 0; }
+    ul.bullet li {
+      padding: 5px 0 5px 22px; position: relative;
+      font-size: 14px; color: var(--text-muted);
+    }
+    ul.bullet li::before { content:'→'; position:absolute; left:0; color:var(--accent4); }
+    ul.bullet li strong { color: var(--text); }
+
+    /* ── ASSET MATRIX ── */
+    .asset-row { display: flex; align-items: stretch; border-bottom: 1px solid var(--border); }
+    .asset-row:last-child { border-bottom: none; }
+    .asset-key {
+      flex: 0 0 260px; padding: 14px 16px;
+      background: var(--surface2);
+      border-right: 1px solid var(--border);
+      font-family: 'SF Mono','Fira Code',monospace;
+      font-size: 12.5px; color: var(--accent4);
+      display: flex; align-items: center;
+    }
+    .asset-val { padding: 14px 16px; font-size: 13.5px; color: var(--text-muted); flex: 1; }
+    .asset-val strong { color: var(--text); }
+    .asset-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:16px; }
+
+    /* ── MATRIX MAP ── */
+    .matrix-wrap {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 32px; overflow-x: auto;
+    }
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 80px 1fr 1fr;
+      grid-template-rows: auto 1fr 1fr;
+      gap: 2px; min-width: 560px;
+    }
+    .m-label-corner { grid-column:1; grid-row:1; }
+    .m-label-x { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); text-align:center; padding:8px 0; }
+    .m-label-y { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--text-muted); writing-mode:vertical-rl; transform:rotate(180deg); text-align:center; padding:0 8px; display:flex; align-items:center; justify-content:center; }
+    .m-cell {
+      border-radius: 8px; padding: 16px; min-height: 100px;
+      display: flex; flex-direction: column; justify-content: center;
+      border: 1px solid var(--border);
+    }
+    .m-cell.highlighted { border-color: var(--accent4); background: rgba(210,168,255,0.06); }
+    .m-cell.muted { background: var(--surface2); opacity: .6; }
+    .m-cell-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .m-cell-sub { font-size: 12px; color: var(--text-muted); }
+    .m-axis-label { font-size: 11px; text-align: center; color: var(--text-muted); padding: 4px; }
+
+    /* ── MARKET CARDS ── */
+    .market-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px; margin-bottom: 20px;
+      position: relative; overflow: hidden;
+    }
+    .market-card::after {
+      content: attr(data-rank);
+      position: absolute; top: 16px; right: 20px;
+      font-size: 2.8rem; font-weight: 900; opacity: .07; line-height: 1;
+    }
+    .market-card.gold   { border-left: 3px solid var(--gold); }
+    .market-card.silver { border-left: 3px solid var(--silver); }
+    .market-card.bronze { border-left: 3px solid var(--bronze); }
+    .market-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+    .market-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; }
+    .market-body { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.75; }
+    .market-stats {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px;
+    }
+    .mstat {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px; text-align: center;
+    }
+    .mstat-num { font-size: 1.3rem; font-weight: 800; color: var(--accent); line-height: 1; margin-bottom: 3px; }
+    .mstat-label { font-size: 11px; color: var(--text-muted); }
+    .market-card.gold   .mstat-num { color: var(--gold); }
+    .market-card.silver .mstat-num { color: var(--silver); }
+    .market-card.bronze .mstat-num { color: var(--bronze); }
+
+    /* ── ROADMAP ── */
+    .roadmap { position: relative; padding: 8px 0; }
+    .roadmap::before {
+      content: ''; position: absolute; left: 30px; top: 24px; bottom: 24px;
+      width: 2px; background: linear-gradient(to bottom, var(--accent) 0%, var(--accent4) 50%, var(--accent5) 100%);
+    }
+    .rm-phase { position: relative; padding-left: 72px; margin-bottom: 32px; }
+    .rm-dot {
+      position: absolute; left: 20px; top: 8px;
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; z-index: 1;
+    }
+    .rm-dot.p1 { background: var(--accent);  color: var(--bg); }
+    .rm-dot.p2 { background: var(--accent4); color: var(--bg); }
+    .rm-dot.p3 { background: var(--accent5); color: var(--bg); }
+    .rm-dot.p4 { background: var(--gold);    color: var(--bg); }
+    .rm-period { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    .rm-period.p1 { color: var(--accent); }
+    .rm-period.p2 { color: var(--accent4); }
+    .rm-period.p3 { color: var(--accent5); }
+    .rm-period.p4 { color: var(--gold); }
+    .rm-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+    .rm-goal { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+    .rm-items {
+      display: flex; flex-wrap: wrap; gap: 7px;
+    }
+    .rm-chip {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 11px; font-size: 12px; color: var(--text-muted);
+    }
+
+    /* ── AGENT FLOW ── */
+    .agent-flow {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px 32px; overflow-x: auto;
+    }
+    .af-row { display: flex; align-items: center; gap: 0; margin-bottom: 6px; flex-wrap: wrap; }
+    .af-box {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 600;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .af-box.user  { border-color: var(--accent);  color: var(--accent); }
+    .af-box.agent { border-color: var(--accent4); color: var(--accent4); }
+    .af-box.tool  { border-color: var(--accent2); color: var(--accent2); }
+    .af-box.out   { border-color: var(--gold);    color: var(--gold); }
+    .af-arrow { color: var(--text-muted); font-size: 18px; padding: 0 8px; flex-shrink: 0; }
+    .af-note { font-size: 12px; color: var(--text-muted); padding: 2px 0 2px 20px; }
+
+    /* ── MOAT TABLE ── */
+    .moat-item { display: flex; gap: 0; border-bottom: 1px solid var(--border); }
+    .moat-item:last-child { border-bottom: none; }
+    .moat-icon { flex: 0 0 52px; display: flex; align-items: center; justify-content: center; font-size: 22px; background: var(--surface2); border-right: 1px solid var(--border); }
+    .moat-body { padding: 14px 18px; flex: 1; }
+    .moat-title { font-size: 13.5px; font-weight: 700; margin-bottom: 3px; }
+    .moat-desc { font-size: 13px; color: var(--text-muted); }
+    .moat-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:16px; }
+
+    /* ── POSITIONING ── */
+    .pos-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px 32px;
+    }
+    .pos-quote {
+      font-size: 1.15rem; font-weight: 700; color: var(--text);
+      border-left: 3px solid var(--accent4); padding-left: 20px;
+      line-height: 1.7; margin-bottom: 20px;
+    }
+    .pos-quote em { color: var(--accent4); font-style: normal; }
+
+    /* ── HIGHLIGHT BOX ── */
+    .hl-box {
+      border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px;
+    }
+    .hl-blue   { background:rgba(88,166,255,.05);  border:1px solid rgba(88,166,255,.2); }
+    .hl-green  { background:rgba(63,185,80,.05);   border:1px solid rgba(63,185,80,.2); }
+    .hl-orange { background:rgba(255,166,87,.05);  border:1px solid rgba(255,166,87,.2); }
+    .hl-purple { background:rgba(210,168,255,.05); border:1px solid rgba(210,168,255,.2); }
+    .hl-gold   { background:rgba(227,179,65,.05);  border:1px solid rgba(227,179,65,.2); }
+    .hl-box p { font-size: 14px; color: var(--text); line-height: 1.75; }
+
+    /* ── STEP CARD ── */
+    .step-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px 24px; margin-bottom: 12px;
+      display: flex; align-items: flex-start; gap: 18px;
+    }
+    .step-num {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent4); color: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 800;
+    }
+    .step-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .step-desc { font-size: 13px; color: var(--text-muted); }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-top: 80px; padding: 32px 40px;
+      border-top: 1px solid var(--border);
+      text-align: center; color: var(--text-muted); font-size: 13px;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    pre {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 18px 22px; font-size: 12.5px; line-height: 1.7;
+      overflow-x: auto; font-family: 'SF Mono','Fira Code','Cascadia Code',monospace;
+      color: #e6edf3; margin-top: 16px;
+    }
+    .kw{color:#ff7b72} .fn{color:#d2a8ff} .str{color:#a5d6ff} .cm{color:#8b949e;font-style:italic} .num{color:#ffa657}
+  </style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<div class="hero">
+  <a href="claw-code-analysis.html" class="back-link">← Claw Code Analysis</a>
+  <div class="hero-badge">Chiến lược thương mại · Tháng 4 / 2026</div>
+  <h1>ImpactAgent</h1>
+  <p class="hero-tagline">Tư vấn chiến lược toàn cảnh: tài sản kỹ thuật, thị trường ngách, lộ trình sản phẩm và competitive moat — dựa trên hai codebase thực tế</p>
+  <div class="hero-quote">
+    "Nếu bạn đang thay đổi database schema của một hệ thống Java/MyBatis — bạn cần biết chính xác file nào sẽ vỡ, dòng nào sẽ lỗi, và phải fix theo thứ tự nào. Trong 30 giây. Với báo cáo compliance sẵn để nộp. Đó là thứ chúng tôi làm — không ai khác làm được."
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TOC -->
+  <div class="toc">
+    <h3>Mục lục</h3>
+    <ul>
+      <li><a href="#assets">💎 Tài sản kỹ thuật</a></li>
+      <li><a href="#matrix">🗺 Map chiến trường</a></li>
+      <li><a href="#markets">🎯 3 thị trường ngách</a></li>
+      <li><a href="#moat">🏰 Competitive Moat</a></li>
+      <li><a href="#agent">🤖 Ghép Claw Code vào</a></li>
+      <li><a href="#roadmap">🛣 Lộ trình 4 giai đoạn</a></li>
+      <li><a href="#trojan">⚔ Chiến lược Trojan Horse</a></li>
+      <li><a href="#risks">⚠ Rủi ro & cách xử lý</a></li>
+      <li><a href="#next">🚀 Bước đầu tiên</a></li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 1 — ASSETS
+  ════════════════════════════════════ -->
+  <div class="section" id="assets">
+    <div class="section-header">
+      <div class="section-icon icon-purple">💎</div>
+      <div>
+        <h2>Tài sản kỹ thuật đang có</h2>
+        <p>Những thứ phải mất nhiều tháng để xây — và bạn đã có sẵn</p>
+      </div>
+    </div>
+
+    <div class="hl-box hl-purple" style="margin-bottom:20px">
+      <p>Bạn đang ngồi trên <strong>2 tài sản kỹ thuật</strong> mà hầu hết các startup AI không có. Đây không phải demo đồ chơi — đây là knowledge được baked-in từ codebase fintech thực tế với <strong>64,311 nodes · 967,781 edges · 2,874 files đã index</strong>.</p>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent4);margin-bottom:10px">Từ MykoHackathon2026Project</div>
+    <div class="asset-wrap" style="margin-bottom:20px">
+      <div class="asset-row">
+        <div class="asset-key">TABLE_MODULE_MAP</div>
+        <div class="asset-val"><strong>Institutional knowledge banking Việt Nam:</strong> map <code>ctrn</code>→transaction, <code>acct</code>→account, <code>setl</code>→settlement, <code>recon</code>→reconciliation — không có tool Mỹ nào biết điều này</div>
+      </div>
+      <div class="asset-row">
+        <div class="asset-key">BANKING_ABBREV_SEED</div>
+        <div class="asset-val"><strong>Domain dictionary tài chính:</strong> <code>amount↔amt</code>, <code>currency↔ccy</code>, <code>account↔acct</code>, <code>transaction↔trn↔txn</code> — auto alias detection 4 nguồn: resultMap, @Column, co-occurrence, edit-distance</div>
+      </div>
+      <div class="asset-row">
+        <div class="asset-key">XMLOperationClassifier</div>
+        <div class="asset-val"><strong>MyBatis READ vs WRITE intelligence:</strong> phân biệt field trong <code>&lt;select&gt;</code> (chỉ cần update DTO) vs <code>&lt;insert&gt;/&lt;update&gt;</code> (cần migration script). Cực kỳ specific, chỉ ai hiểu banking Asia mới nghĩ ra</div>
+      </div>
+      <div class="asset-row">
+        <div class="asset-key">GENERIC_FIELDS + short-column guard</div>
+        <div class="asset-val"><strong>Precision engineering:</strong> <code>status</code>, <code>type</code>, <code>name</code>... được filter riêng để tránh noise. Column &lt;4 ký tự cần XML/Entity evidence mới count</div>
+      </div>
+      <div class="asset-row">
+        <div class="asset-key">ai_line_classifier.py</div>
+        <div class="asset-val"><strong>AI classification có business context:</strong> phân biệt <em>"khai báo biến"</em> (loại trừ) vs <em>"logic sẽ vỡ"</em> (bị ảnh hưởng) vs <em>"cần review"</em> — batch 1 API call/file, không phải 1 call/dòng</div>
+      </div>
+      <div class="asset-row">
+        <div class="asset-key">validator.py (F1/Precision/Recall)</div>
+        <div class="asset-val"><strong>Đo được độ chính xác:</strong> ground-truth registry với <code>must_hit</code> / <code>must_not_hit</code> — có thể nói với khách hàng con số F1 thực tế. Cực hiếm — không tool generic nào dám làm này</div>
+      </div>
+      <div class="asset-row">
+        <div class="asset-key">i18n: vi / en / ja</div>
+        <div class="asset-val"><strong>Japan-ready từ ngày 1:</strong> toàn bộ UI + AI prompt đều có Japanese template. Không cần build thêm — chỉ cần polish</div>
+      </div>
+      <div class="asset-row">
+        <div class="asset-key">Knowledge Graph (NetworkX)</div>
+        <div class="asset-val"><strong>Scale đã được chứng minh:</strong> 64,311 nodes · 967,781 edges từ 2,874 files fintech thực — không phải demo giả. Traversal: field→file→class→method + import chain</div>
+      </div>
+    </div>
+
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent4);margin-bottom:10px">Từ Claw Code (harness architecture)</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">🔧 Tool wiring & Permission system</div>
+        <ul class="bullet">
+          <li>184 tools blueprint đã được mirror từ Claude Code</li>
+          <li><code>ToolPermissionContext</code> — deny by name hoặc prefix</li>
+          <li><code>BashTool</code>, <code>FileEditTool</code>, <code>GrepTool</code> sẵn skeleton</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">🤖 Multi-agent patterns</div>
+        <ul class="bullet">
+          <li><code>planAgent</code>, <code>exploreAgent</code>, <code>verificationAgent</code></li>
+          <li><code>TeamCreateTool</code>, <code>TaskCreateTool</code> cho parallel execution</li>
+          <li>Bootstrap graph 7 stages — luồng startup đã thiết kế sẵn</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">💾 Session & State management</div>
+        <ul class="bullet">
+          <li>Session save/load ra đĩa, transcript management</li>
+          <li>Token usage tracking, auto-compact sau N turns</li>
+          <li>Stream events (SSE-style) cho real-time UI</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">🔌 Extensibility</div>
+        <ul class="bullet">
+          <li>Plugin system, Skills system (20 modules)</li>
+          <li><code>ScheduleCronTool</code>, <code>RemoteTriggerTool</code></li>
+          <li>Remote/SSH/Teleport modes cho enterprise deployment</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 2 — MATRIX MAP
+  ════════════════════════════════════ -->
+  <div class="section" id="matrix">
+    <div class="section-header">
+      <div class="section-icon icon-blue">🗺</div>
+      <div>
+        <h2>Map chiến trường — Đối thủ đang ở đâu</h2>
+        <p>Vùng đất trống mà không ai chiếm</p>
+      </div>
+    </div>
+
+    <div class="matrix-wrap">
+      <div style="margin-bottom:12px;font-size:12px;text-align:center;color:var(--text-muted)">
+        Trục X: Generic ↔ Domain-Specific &nbsp;|&nbsp; Trục Y: High value per deal ↔ Low value per deal
+      </div>
+      <div class="matrix-grid">
+        <!-- row 0: column labels -->
+        <div class="m-label-corner"></div>
+        <div class="m-label-x">GENERIC</div>
+        <div class="m-label-x">DOMAIN-SPECIFIC</div>
+
+        <!-- row 1: high value -->
+        <div class="m-label-y">HIGH VALUE / DEAL</div>
+        <div class="m-cell muted">
+          <div class="m-cell-title" style="color:var(--text-muted)">GitHub Copilot · Cursor · Windsurf · SonarQube</div>
+          <div class="m-cell-sub">Giúp viết code mới, generic code review. Deal nhỏ per developer, volume lớn.</div>
+        </div>
+        <div class="m-cell highlighted">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent4);margin-bottom:6px">★ VỊ TRÍ CỦA BẠN</div>
+          <div class="m-cell-title" style="color:var(--text)">DB Change Intelligence<br>for Java/MyBatis/Banking</div>
+          <div class="m-cell-sub" style="margin-top:6px">$50K–$200K/năm. Đặc thù banking Asia. Không ai chiếm vùng này.</div>
+        </div>
+
+        <!-- row 2: low value -->
+        <div class="m-label-y">LOW VALUE / DEAL</div>
+        <div class="m-cell muted">
+          <div class="m-cell-title" style="color:var(--text-muted)">Linters · Formatters · ESLint · Prettier</div>
+          <div class="m-cell-sub">Per-developer pricing, commodity.</div>
+        </div>
+        <div class="m-cell muted">
+          <div class="m-cell-title" style="color:var(--text-muted)">Liquibase · Flyway</div>
+          <div class="m-cell-sub">Migration scripts only. Không biết file Java nào cần sửa trước khi chạy migration.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hl-box hl-green" style="margin-top:16px">
+      <p><strong>Nhận xét quan trọng:</strong> GitHub Copilot/Cursor giúp viết code mới — họ không biết và không quan tâm "file X sẽ vỡ nếu đổi column Y". SonarQube tìm bug hiện tại — không phân tích impact của thay đổi schema. Liquibase quản lý SQL migration — không biết file Java nào cần sửa. <strong>Không có ai ở góc trên phải. Đó là vùng đất trống.</strong></p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 3 — 3 MARKETS
+  ════════════════════════════════════ -->
+  <div class="section" id="markets">
+    <div class="section-header">
+      <div class="section-icon icon-gold">🎯</div>
+      <div>
+        <h2>3 thị trường ngách — Theo thứ tự ưu tiên</h2>
+        <p>Phân tích chi tiết từng thị trường, cách tiếp cận và deal size</p>
+      </div>
+    </div>
+
+    <!-- MARKET 1 -->
+    <div class="market-card gold" data-rank="1">
+      <div class="market-title">
+        <span class="tag tag-gold">🥇 Ngách 1 — Ưu tiên cao nhất</span>
+        Japan Financial Institutions (FSI)
+      </div>
+      <div class="market-subtitle">~100 regional banks · ~50 securities firms · ~30 insurance companies</div>
+      <div class="market-stats">
+        <div class="mstat">
+          <div class="mstat-num">$50K–200K</div>
+          <div class="mstat-label">Per deal / năm</div>
+        </div>
+        <div class="mstat">
+          <div class="mstat-num">2–6 tháng</div>
+          <div class="mstat-label">Quy trình change hiện tại</div>
+        </div>
+        <div class="mstat">
+          <div class="mstat-num">30 giây</div>
+          <div class="mstat-label">Sau khi dùng tool của bạn</div>
+        </div>
+      </div>
+      <div class="market-body">
+        Tất cả ngân hàng Nhật đều chạy <strong>Java + Spring + MyBatis + Oracle</strong> — đúng stack bạn đang support. Codebase monolith 20–30 năm tuổi, hàng trăm nghìn file. Quy trình thay đổi hệ thống hiện tại: bước "影響調査 (Impact Investigation Report)" — viết tay — mất 2–4 tuần senior engineer. Bạn rút ngắn xuống 30 giây với output là tài liệu compliance-ready để nộp thẳng cho FSA.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Lý do chọn Japan</th><th>Chi tiết</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tag tag-gold">Stack match</span></td><td>Java + MyBatis là đặc thù Đông Á — Nhật, Hàn, VN. Western tools bỏ qua hoàn toàn</td></tr>
+            <tr><td><span class="tag tag-gold">Japanese UI sẵn</span></td><td><code>i18n.py</code> đã có <code>"ja"</code> template, AI prompt cũng có Japanese. Không cần build thêm</td></tr>
+            <tr><td><span class="tag tag-gold">FSA compliance pressure</span></td><td>Financial Services Agency yêu cầu documentation chặt chẽ → willingness to pay cao</td></tr>
+            <tr><td><span class="tag tag-gold">Risk = $$ liability</span></td><td>Sai sót trong banking system = hàng triệu USD penalty. Tool tiết kiệm risk này xứng đáng $200K/năm</td></tr>
+            <tr><td><span class="tag tag-gold">IT budget lớn</span></td><td>Ngân hàng Nhật chi $50–500M/năm cho IT. Tool $200K là không đáng kể với họ</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="hl-box hl-gold">
+        <p><strong>Cách vào thị trường Nhật:</strong> Không bán direct. Tìm <strong>System Integrator (SI) partner</strong> — NTT Data, Fujitsu, NEC, Hitachi Solutions. Họ là vendor quen của các ngân hàng. Đóng gói thành <strong>on-premise Docker</strong> — dữ liệu không ra ngoài là yêu cầu bắt buộc với banking Nhật.</p>
+      </div>
+    </div>
+
+    <!-- MARKET 2 -->
+    <div class="market-card silver" data-rank="2">
+      <div class="market-title">
+        <span class="tag tag-blue">🥈 Ngách 2 — Trung hạn</span>
+        ASEAN Core Banking Migration Wave (2024–2028)
+      </div>
+      <div class="market-subtitle">VN · Thailand · Indonesia · Philippines · Malaysia đang migrate core banking</div>
+      <div class="market-stats">
+        <div class="mstat">
+          <div class="mstat-num">$20K–100K</div>
+          <div class="mstat-label">Per migration project</div>
+        </div>
+        <div class="mstat">
+          <div class="mstat-num">50K–200K</div>
+          <div class="mstat-label">Files Java per codebase</div>
+        </div>
+        <div class="mstat">
+          <div class="mstat-num">Project-based</div>
+          <div class="mstat-label">Dễ close hơn subscription</div>
+        </div>
+      </div>
+      <div class="market-body">
+        Làn sóng migration từ hệ thống core banking cũ (15–20 năm tuổi) sang platform mới đang diễn ra rầm rộ. <strong>Temenos, Finastra, Silverlake Axis, FIS Global</strong> và các công ty outsourcing lớn (TCS, Wipro, Infosys) đang làm migration này — phải map từng DB column từ schema cũ sang schema mới bằng tay. Bạn tự động hóa bước "field impact analysis" — xác định tất cả code cần thay đổi.
+      </div>
+      <div class="hl-box hl-blue">
+        <p><strong>Lợi thế:</strong> Deal project-based ($20K–100K) dễ approve ngân sách hơn subscription năm. Sau project xong, chuyển sang maintenance subscription. Một SI partner ở Singapore có thể mang 3–5 deals/năm.</p>
+      </div>
+    </div>
+
+    <!-- MARKET 3 -->
+    <div class="market-card bronze" data-rank="3">
+      <div class="market-title">
+        <span class="tag tag-orange">🥉 Ngách 3 — Tức thì</span>
+        Vietnam Enterprise — Dùng network có sẵn
+      </div>
+      <div class="market-subtitle">Fintech, ngân hàng, công ty outsource Nhật tại VN</div>
+      <div class="market-stats">
+        <div class="mstat">
+          <div class="mstat-num">$2K–20K</div>
+          <div class="mstat-label">Per deal / năm</div>
+        </div>
+        <div class="mstat">
+          <div class="mstat-num">Deal size nhỏ</div>
+          <div class="mstat-label">Nhưng close nhanh</div>
+        </div>
+        <div class="mstat">
+          <div class="mstat-num">Network sẵn</div>
+          <div class="mstat-label">Bắt đầu ngay tuần này</div>
+        </div>
+      </div>
+      <div class="market-body">
+        Thị trường bạn hiểu rõ nhất, network có sẵn, dễ close deal nhất dù deal size nhỏ hơn.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Target</th><th>Pain point</th><th>Approach</th></tr></thead>
+          <tbody>
+            <tr><td><strong>VnPay, Momo, ZaloPay</strong></td><td>Java + MyBatis stack, team lớn, thay đổi schema liên tục</td><td>Demo trực tiếp với tech lead</td></tr>
+            <tr><td><strong>Techcombank Digital, MB, VPBank</strong></td><td>Đang modernize, cần change management tool</td><td>Qua kênh vendor quen</td></tr>
+            <tr><td><strong>KMS, Axon, Harvey Nash</strong></td><td>Làm project cho khách Nhật, cần đúng tool này</td><td>B2B partnership — họ bundle vào service</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 4 — MOAT
+  ════════════════════════════════════ -->
+  <div class="section" id="moat">
+    <div class="section-header">
+      <div class="section-icon icon-red">🏰</div>
+      <div>
+        <h2>Competitive Moat — Những thứ đối thủ không thể copy nhanh</h2>
+        <p>Đây là lý do tại sao ngay cả Microsoft hay Google cũng khó làm bạn mờ nhạt</p>
+      </div>
+    </div>
+
+    <div class="moat-wrap">
+      <div class="moat-item">
+        <div class="moat-icon">🧠</div>
+        <div class="moat-body">
+          <div class="moat-title">Domain knowledge baked-in không thể học từ internet</div>
+          <div class="moat-desc"><code>BANKING_ABBREV_SEED</code>, <code>TABLE_MODULE_MAP</code> — tích lũy từ kinh nghiệm thực tế với codebase fintech. GitHub Copilot không bao giờ biết rằng trong hệ thống core banking Việt Nam, <code>acct</code> = account và <code>ctrn</code> = transaction. Bạn biết vì bạn đã ngồi với codebase thực hàng tháng.</div>
+        </div>
+      </div>
+      <div class="moat-item">
+        <div class="moat-icon">🔍</div>
+        <div class="moat-body">
+          <div class="moat-title">MyBatis READ vs WRITE intelligence — cực kỳ specific</div>
+          <div class="moat-desc">Western tools tập trung vào JPA/Hibernate. <code>XMLOperationClassifier</code> của bạn parse MyBatis XML mapper rồi phân biệt field đó nằm trong <code>&lt;select&gt;</code> (chỉ update DTO) hay <code>&lt;insert&gt;/&lt;update&gt;</code> (cần migration script). Chỉ người hiểu banking Asia mới nghĩ ra điều này.</div>
+        </div>
+      </div>
+      <div class="moat-item">
+        <div class="moat-icon">📊</div>
+        <div class="moat-body">
+          <div class="moat-title">Precision đo được bằng số — F1/Precision/Recall thực tế</div>
+          <div class="moat-desc"><code>validator.py</code> với ground-truth registry cho phép bạn nói với khách hàng: "Tool đạt F1 = X% trên codebase fintech thực tế quy mô 50,000 files." Không có tool generic nào dám đưa ra con số này.</div>
+        </div>
+      </div>
+      <div class="moat-item">
+        <div class="moat-icon">📈</div>
+        <div class="moat-body">
+          <div class="moat-title">Network effect của Knowledge Graph — càng dùng càng thông minh</div>
+          <div class="moat-desc">Sau khi build graph cho một ngân hàng, graph đó ngày càng chính xác hơn theo thời gian (thêm alias patterns, thêm table mappings). Chuyển sang tool khác = mất toàn bộ institutional knowledge đã tích lũy trong graph. Switch cost rất cao.</div>
+        </div>
+      </div>
+      <div class="moat-item">
+        <div class="moat-icon">🌐</div>
+        <div class="moat-body">
+          <div class="moat-title">Vietnam-first moat — AI giải thích bằng tiếng Việt, tiếng Nhật</div>
+          <div class="moat-desc">AI explanation in Vietnamese + Japanese từ ngày 1. Context về quy trình banking VN/Japan được encode vào AI prompt. Không có tool nước ngoài nào làm được — họ không biết context này tồn tại.</div>
+        </div>
+      </div>
+      <div class="moat-item">
+        <div class="moat-icon">🔒</div>
+        <div class="moat-body">
+          <div class="moat-title">On-premise deployment — dữ liệu không bao giờ rời khỏi ngân hàng</div>
+          <div class="moat-desc">Banking regulation ở VN, Nhật, ASEAN yêu cầu source code không được upload lên cloud bên ngoài. SaaS tools của Mỹ không thể enter thị trường này. Bạn có thể ship Docker image on-premise — đó là điều kiện tiên quyết, không phải nice-to-have.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 5 — AGENT INTEGRATION
+  ════════════════════════════════════ -->
+  <div class="section" id="agent">
+    <div class="section-header">
+      <div class="section-icon icon-purple">🤖</div>
+      <div>
+        <h2>Ghép Claw Code vào engine hiện tại</h2>
+        <p>Từ "analyze tool" → "AI agent đồng hành" — biến bạn từ tool thành platform</p>
+      </div>
+    </div>
+
+    <div class="hl-box hl-purple" style="margin-bottom:20px">
+      <p><strong>Bước nhảy giá trị:</strong> Tool hiện tại của bạn trả lời "file nào bị ảnh hưởng". Sau khi ghép Claw Code: agent sẽ trả lời "file nào bị ảnh hưởng → phải fix theo thứ tự nào → đây là code patch → đây là test case → đây là migration script → đây là compliance report".</p>
+    </div>
+
+    <div class="agent-flow">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
+        Ví dụ: User nói <em>"Tôi muốn đổi MST_USER.user_id từ Long sang String"</em>
+      </div>
+
+      <div class="af-row">
+        <div class="af-box user">User Input</div>
+        <div class="af-arrow">→</div>
+        <div class="af-box agent">ImpactAgent Orchestrator</div>
+      </div>
+      <div class="af-note">Parse intent → xác định table.column + change type</div>
+
+      <div style="height:16px"></div>
+
+      <div class="af-row">
+        <div class="af-box agent">[exploreAgent]</div>
+        <div class="af-arrow">→</div>
+        <div class="af-box tool">Knowledge Graph (engine của bạn)</div>
+        <div class="af-arrow">→</div>
+        <div style="font-size:13px;color:var(--text-muted)">47 files HIGH · 23 files MEDIUM · impact tree đầy đủ</div>
+      </div>
+      <div class="af-note">Dùng ImpactAnalyzer.analyze() — engine của bạn làm "tool" trong agent loop</div>
+
+      <div style="height:10px"></div>
+
+      <div class="af-row">
+        <div class="af-box agent">[planAgent] ← Claw Code</div>
+        <div class="af-arrow">→</div>
+        <div style="font-size:13px;color:var(--text-muted)">Sắp xếp thứ tự fix: Entity trước → Mapper sau → Service cuối → Test cuối cùng</div>
+      </div>
+      <div class="af-note">Estimate: 8 files cần sửa thực sự, 39 files chỉ cần review</div>
+
+      <div style="height:10px"></div>
+
+      <div class="af-row">
+        <div class="af-box agent">[verificationAgent] ← Claw Code</div>
+        <div class="af-arrow">→</div>
+        <div class="af-box tool">ai_line_classifier.py (engine của bạn)</div>
+        <div class="af-arrow">→</div>
+        <div style="font-size:13px;color:var(--text-muted)">Line-level: logic nào vỡ, tại sao, cách fix</div>
+      </div>
+
+      <div style="height:10px"></div>
+
+      <div class="af-row">
+        <div class="af-box agent">[FileEditTool] ← Claw Code</div>
+        <div class="af-arrow">→</div>
+        <div style="font-size:13px;color:var(--text-muted)">Generate code patches → User review → Approve → Apply</div>
+      </div>
+
+      <div style="height:16px"></div>
+
+      <div class="af-row">
+        <div class="af-arrow" style="padding:0 0 0 8px">↓</div>
+      </div>
+      <div class="af-row">
+        <div class="af-box out">Migration Report PDF</div>
+        <div class="af-arrow">+</div>
+        <div class="af-box out">Code patches</div>
+        <div class="af-arrow">+</div>
+        <div class="af-box out">Test cases</div>
+        <div class="af-arrow">+</div>
+        <div class="af-box out">Compliance document</div>
+      </div>
+    </div>
+
+    <pre><code><span class="cm"># Luồng code thực tế khi ghép 2 engine lại</span>
+<span class="kw">from</span> src.impact_analyzer <span class="kw">import</span> ImpactAnalyzer
+<span class="kw">from</span> claw_code.src.runtime <span class="kw">import</span> PortRuntime
+<span class="kw">from</span> claw_code.src.query_engine <span class="kw">import</span> QueryEnginePort
+
+<span class="cm"># Bước 1: Dùng engine của bạn làm "exploreAgent tool"</span>
+<span class="kw">def</span> <span class="fn">impact_tool</span>(table: str, column: str, change: str) -> dict:
+    analyzer = ImpactAnalyzer(graph_path=GRAPH_FILE)
+    results  = analyzer.analyze(f<span class="str">"{table}.{column}:{change}"</span>)
+    <span class="kw">return</span> {<span class="str">"high"</span>: results[<span class="str">"high"</span>], <span class="str">"medium"</span>: results[<span class="str">"medium"</span>], <span class="str">"tree"</span>: results[<span class="str">"graph"</span>]}
+
+<span class="cm"># Bước 2: Dùng Claw Code's QueryEnginePort để orchestrate agent loop</span>
+engine = QueryEnginePort.<span class="fn">from_workspace</span>()
+result = engine.<span class="fn">submit_message</span>(
+    prompt=<span class="str">"User muốn đổi MST_USER.user_id từ Long sang String"</span>,
+    matched_tools=(<span class="str">"ImpactTool"</span>, <span class="str">"planAgent"</span>, <span class="str">"verificationAgent"</span>, <span class="str">"FileEditTool"</span>),
+)
+
+<span class="cm"># Bước 3: Stream kết quả ra UI</span>
+<span class="kw">for</span> event <span class="kw">in</span> engine.<span class="fn">stream_submit_message</span>(prompt, matched_tools=...):
+    <span class="fn">yield</span> event  <span class="cm"># → SSE → React UI real-time</span></code></pre>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 6 — ROADMAP
+  ════════════════════════════════════ -->
+  <div class="section" id="roadmap">
+    <div class="section-header">
+      <div class="section-icon icon-green">🛣</div>
+      <div>
+        <h2>Lộ trình 4 giai đoạn</h2>
+        <p>Từ tool hackathon → SaaS → Platform → Enterprise</p>
+      </div>
+    </div>
+
+    <div class="roadmap">
+      <div class="rm-phase">
+        <div class="rm-dot p1">1</div>
+        <div class="rm-period p1">Tháng 1–3 · SaaS MVP</div>
+        <div class="rm-title">Mục tiêu: $1,000 MRR và 3 khách hàng trả tiền</div>
+        <div class="rm-goal">Bọc engine hiện tại thành Web SaaS. Thay Streamlit bằng FastAPI + React. Thêm multi-repo support: upload/connect GitHub → tự build knowledge graph. Report PDF/HTML cho manager. Auth + billing (Stripe).</div>
+        <div class="rm-items">
+          <span class="rm-chip">FastAPI backend</span>
+          <span class="rm-chip">React UI</span>
+          <span class="rm-chip">Multi-repo upload</span>
+          <span class="rm-chip">PDF report export</span>
+          <span class="rm-chip">Stripe billing</span>
+          <span class="rm-chip">Docker packaging</span>
+          <span class="rm-chip">3 pilot customers</span>
+        </div>
+      </div>
+
+      <div class="rm-phase">
+        <div class="rm-dot p2">2</div>
+        <div class="rm-period p2">Tháng 4–6 · Agent Layer</div>
+        <div class="rm-title">Mục tiêu: Từ "analyze" → "analyze + fix + verify"</div>
+        <div class="rm-goal">Ghép Claw Code harness vào engine. ImpactAgent orchestrates: exploreAgent → planAgent → verificationAgent → FileEditTool. VSCode Extension. GitHub Actions integration tự động chạy impact check khi có PR đổi DB schema.</div>
+        <div class="rm-items">
+          <span class="rm-chip">Claw Code integration</span>
+          <span class="rm-chip">Multi-agent orchestration</span>
+          <span class="rm-chip">VSCode Extension</span>
+          <span class="rm-chip">GitHub Actions hook</span>
+          <span class="rm-chip">Chat interface</span>
+          <span class="rm-chip">Code patch generation</span>
+        </div>
+      </div>
+
+      <div class="rm-phase">
+        <div class="rm-dot p3">3</div>
+        <div class="rm-period p3">Tháng 7–12 · Platform</div>
+        <div class="rm-title">Mục tiêu: Series A / Strategic partnership với SI Nhật</div>
+        <div class="rm-goal">Đa ngôn ngữ source code: TypeScript parser đã có sẵn, thêm Python, Go. Enterprise on-premise: source code không rời khỏi ngân hàng. Team collaboration: nhiều dev cùng analyze, comment, approve. Compliance reports tự động cho FSA (Nhật), NHNN (VN).</div>
+        <div class="rm-items">
+          <span class="rm-chip">TypeScript parser (có sẵn)</span>
+          <span class="rm-chip">Python/Go parsers</span>
+          <span class="rm-chip">On-premise Enterprise</span>
+          <span class="rm-chip">Team collaboration</span>
+          <span class="rm-chip">FSA compliance templates</span>
+          <span class="rm-chip">SI partner Nhật</span>
+        </div>
+      </div>
+
+      <div class="rm-phase">
+        <div class="rm-dot p4">4</div>
+        <div class="rm-period p4">Năm 2 · Regulatory Engine</div>
+        <div class="rm-title">Mục tiêu: "Source of truth" cho mọi thay đổi schema</div>
+        <div class="rm-goal">Tự động tạo documentation cho regulator. Audit trail đầy đủ mọi thay đổi schema. CI/CD gate: không deploy nếu chưa có impact sign-off. Đây là thứ compliance officer ký check mỗi tháng — không thể uninstall sau khi đã vào quy trình.</div>
+        <div class="rm-items">
+          <span class="rm-chip">Full audit trail</span>
+          <span class="rm-chip">Regulator report automation</span>
+          <span class="rm-chip">CI/CD gate integration</span>
+          <span class="rm-chip">Change approval workflow</span>
+          <span class="rm-chip">Multi-bank dashboard</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 7 — TROJAN HORSE
+  ════════════════════════════════════ -->
+  <div class="section" id="trojan">
+    <div class="section-header">
+      <div class="section-icon icon-orange">⚔</div>
+      <div>
+        <h2>Chiến lược Trojan Horse</h2>
+        <p>Vào ngách nhỏ, bám rễ vào quy trình, rồi mở rộng ra platform</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Giai đoạn</th>
+            <th>Hình thức bán</th>
+            <th>Giá trị đề xuất</th>
+            <th>Vì sao khó uninstall</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-blue">1</span> <strong>Impact Report Tool</strong></td>
+            <td>$199–499/tháng. Bán như tool tạo báo cáo</td>
+            <td>Tiết kiệm 2–4 tuần engineer mỗi lần thay đổi schema</td>
+            <td>Khách hàng bắt đầu phụ thuộc vào report format</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-purple">2</span> <strong>Change Intelligence Hub</strong></td>
+            <td>$2K–5K/tháng. Tích hợp vào Jira/GitHub workflow</td>
+            <td>Trở thành "nguồn sự thật" cho mọi thay đổi DB</td>
+            <td>Lịch sử thay đổi, audit trail nằm trong tool</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-orange">3</span> <strong>Agentic Migration Assistant</strong></td>
+            <td>$10K–30K/tháng. Agent tự fix + verify</td>
+            <td>Engineer không cần đọc 200 files để tìm điểm bị ảnh hưởng</td>
+            <td>Toàn bộ knowledge base + lịch sử fix nằm trong graph</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-gold">4</span> <strong>Regulatory Compliance Engine</strong></td>
+            <td>$50K–200K/năm. Enterprise contract</td>
+            <td>Compliance report tự động, audit trail cho regulator</td>
+            <td>Ký compliance với regulator dùng output của tool này</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="hl-box hl-orange">
+      <p><strong>Nguyên tắc Trojan Horse:</strong> Entry price thấp, dễ approve ngân sách, không đe dọa ai. Sau khi vào quy trình, switch cost tăng theo cấp số nhân vì knowledge graph ngày càng sâu và lịch sử thay đổi của tổ chức nằm trong tool. Đây là cùng pattern mà Atlassian (Jira), GitHub, và Datadog đã dùng để chiếm enterprise market.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 8 — RISKS
+  ════════════════════════════════════ -->
+  <div class="section" id="risks">
+    <div class="section-header">
+      <div class="section-icon icon-red">⚠</div>
+      <div>
+        <h2>Rủi ro & Cách xử lý</h2>
+        <p>Nhìn thẳng vào rủi ro để chuẩn bị trước</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Rủi ro</th><th>Mức độ</th><th>Cách xử lý</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Codebase khách hàng quá lớn/phức tạp</strong></td>
+            <td><span class="tag tag-orange">Trung bình</span></td>
+            <td>Đã test 2,874 files · 967K edges. Bằng chứng scalability. Worst case: shard graph theo module package</td>
+          </tr>
+          <tr>
+            <td><strong>Khách hàng sợ upload code lên cloud</strong></td>
+            <td><span class="tag tag-red">Cao — banking</span></td>
+            <td>On-premise Docker image từ giai đoạn 1. Không phải feature sau — đây là điều kiện tiên quyết</td>
+          </tr>
+          <tr>
+            <td><strong>Cạnh tranh từ GitHub Copilot / Cursor</strong></td>
+            <td><span class="tag tag-green">Thấp</span></td>
+            <td>Họ là generic coding assistant. Bạn là change impact specialist. Thực ra có thể tích hợp vào Cursor làm plugin — họ là distribution channel, không phải đối thủ</td>
+          </tr>
+          <tr>
+            <td><strong>Khách hàng tự build internal tool</strong></td>
+            <td><span class="tag tag-orange">Trung bình</span></td>
+            <td>Cost of domain knowledge không rõ ràng với họ. Khi họ hiểu scope thực sự (6–12 tháng engineer) thì mua tool sẽ hợp lý hơn. Cung cấp POC miễn phí 30 ngày để họ thấy ROI</td>
+          </tr>
+          <tr>
+            <td><strong>MyBatis ngày càng ít người dùng, migration sang JPA</strong></td>
+            <td><span class="tag tag-orange">Trung hạn</span></td>
+            <td>Migration wave chính là cơ hội — họ cần tool này chính xác khi migrate. Thêm JPA/Hibernate support song song</td>
+          </tr>
+          <tr>
+            <td><strong>AI model cost tăng khi scale</strong></td>
+            <td><span class="tag tag-green">Thấp</span></td>
+            <td">Rule-based engine là free, AI chỉ dùng cho enrichment. Có thể offer tier "no AI" cho khách hàng nhạy cảm về chi phí/data</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       SECTION 9 — NEXT STEPS
+  ════════════════════════════════════ -->
+  <div class="section" id="next">
+    <div class="section-header">
+      <div class="section-icon icon-green">🚀</div>
+      <div>
+        <h2>Bước đầu tiên — Tuần này</h2>
+        <p>Không cần rebuild. Tập trung vào khách hàng trả tiền đầu tiên</p>
+      </div>
+    </div>
+
+    <div class="hl-box hl-green" style="margin-bottom:20px">
+      <p><strong>Nguyên tắc:</strong> Bạn không thiếu kỹ thuật. Bạn đang thiếu <strong>khách hàng trả tiền đầu tiên</strong>. Mọi quyết định kỹ thuật tiếp theo nên do khách hàng đó định hướng. Web UI Streamlit hiện tại đủ để demo. Tập trung vào sales trước, polish sau.</p>
+    </div>
+
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Lấy 3 cuộc gọi với tech lead fintech trong tuần này</div>
+        <div class="step-desc">Gọi điện cho đúng 3 người bạn quen ở công ty fintech/banking. Không cần sản phẩm hoàn chỉnh. Nói: "Tôi có tool phân tích impact khi đổi database schema trong 30 giây. Bạn có 20 phút để xem demo không?" — Nếu họ từ chối xem demo, đó là signal sản phẩm cần được repositioned.</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Charge ngay từ pilot — dù chỉ $50 để validate willingness to pay</div>
+        <div class="step-desc">Free trial = không có data về willingness to pay. $50 = khách hàng đã bỏ tiền = feedback có giá trị hơn gấp 10 lần. Nếu họ không trả $50 thì họ cũng không trả $2000/tháng sau này.</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Chạy demo với source code thực của khách — không phải demo giả</div>
+        <div class="step-desc">Xin một repo Java nhỏ (~500 files) của họ. Build knowledge graph trên spot. Chọn một column họ đang dùng thật. Chạy analysis trước mặt họ. Kết quả thực sẽ thuyết phục hơn bất kỳ slide nào.</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Một signal Japan: tìm 1 người Việt đang làm ở SI Nhật</div>
+        <div class="step-desc">LinkedIn search: "Vietnam + NTT Data" hoặc "Vietnam + Fujitsu" hoặc "Vietnam + Harvey Nash Japan". Một người connector ở đúng vị trí có thể mở cánh cửa deal $100K đầu tiên ở Nhật nhanh hơn bất kỳ outbound marketing nào.</div>
+      </div>
+    </div>
+
+    <div class="pos-box" style="margin-top:24px">
+      <div class="pos-quote">
+        "Before you change one line — know exactly what breaks, and let AI fix it."
+        <br><em>— Positioning statement cho ImpactAgent</em>
+      </div>
+      <div class="grid-2">
+        <div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:8px">Không là</div>
+          <ul class="bullet">
+            <li>Không phải coding assistant (Copilot, Cursor)</li>
+            <li>Không phải bug finder (SonarQube)</li>
+            <li>Không phải migration tool (Liquibase)</li>
+            <li>Không phải test generator</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--accent4);margin-bottom:8px">Là</div>
+          <ul class="bullet">
+            <li><strong>Change Intelligence Engine cho enterprise Java/MyBatis</strong></li>
+            <li><strong>Compliance-ready impact analysis trong 30 giây</strong></li>
+            <li><strong>Agentic migration assistant với domain knowledge banking</strong></li>
+            <li><strong>Source of truth cho mọi thay đổi schema</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>Tư vấn chiến lược bởi <strong>GitHub Copilot</strong> · Tháng 4 / 2026</p>
+  <p style="margin-top:6px">
+    <a href="claw-code-analysis.html">← Claw Code Architecture Analysis</a>
+    &nbsp;·&nbsp;
+    Hackathon: <strong>FNS AI Hackathon VN 2026</strong>
+    &nbsp;·&nbsp;
+    Dự án: <strong>ImpactAgent</strong>
+  </p>
+</div>
+
+</body>
+</html>
